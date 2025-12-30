@@ -25,8 +25,8 @@ export const Employees: React.FC = () => {
     setIsLoading(true);
     try {
         const [empData, deptData] = await Promise.all([
-            api.get<Employee[]>('http://127.0.0.1:5000/api/employees'),
-            api.get<Department[]>('http://127.0.0.1:5000/api/departments')
+            api.get<Employee[]>('http://192.168.43.171:5000/api/employees'),
+            api.get<Department[]>('http://192.168.43.171:5000/api/departments')
         ]);
         // Sort employees by employee_id ascending
         setEmployees(empData.sort((a, b) => (a.employee_id || 0) - (b.employee_id || 0)));
@@ -72,10 +72,10 @@ export const Employees: React.FC = () => {
 
     try {
         if (editingEmployee && editingEmployee.employee_id) {
-            await api.put(`http://127.0.0.1:5000/api/employees/${editingEmployee.employee_id}`, payload);
+            await api.put(`http://192.168.43.171:5000/api/employees/${editingEmployee.employee_id}`, payload);
             showNotification('Employee updated successfully', 'success');
         } else {
-            await api.post('http://127.0.0.1:5000/api/employees', payload);
+            await api.post('http://192.168.43.171:5000/api/employees', payload);
             showNotification('Employee added successfully', 'success');
         }
         setIsModalOpen(false);
@@ -88,7 +88,7 @@ export const Employees: React.FC = () => {
   const handleDelete = async () => {
     if (!deletingEmployee?.employee_id) return;
     try {
-        await api.delete(`http://127.0.0.1:5000/api/employees/${deletingEmployee.employee_id}`);
+        await api.delete(`http://192.168.43.171:5000/api/employees/${deletingEmployee.employee_id}`);
         showNotification('Employee deleted successfully', 'success');
         setDeletingEmployee(null);
         fetchData();
