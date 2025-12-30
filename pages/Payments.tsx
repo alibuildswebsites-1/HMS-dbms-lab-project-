@@ -96,13 +96,14 @@ export const Payments: React.FC = () => {
   return (
     <Layout title="Payments">
        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-6">
-           <div className="bg-[#01411C] text-[#FDB913] p-4 rounded-lg shadow-md w-full sm:w-auto">
-               <p className="text-sm font-medium uppercase tracking-wider text-white">Total Revenue Collected</p>
-               <h2 className="text-3xl font-bold mt-1">PKR {totalRevenue.toLocaleString()}</h2>
+           <div className="bg-[#2C4A3B] text-white p-6 rounded-2xl shadow-md w-full sm:w-auto relative overflow-hidden">
+               <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2"></div>
+               <p className="text-xs font-bold uppercase tracking-widest text-[#F4D35E] mb-1">Total Revenue</p>
+               <h2 className="text-3xl font-bold tracking-tight">PKR {totalRevenue.toLocaleString()}</h2>
            </div>
            <button
             onClick={() => openModal()}
-            className="bg-[#01411C] text-white px-4 py-2 rounded-lg hover:bg-green-900 transition flex items-center shadow-md h-10 w-full sm:w-auto justify-center"
+            className="bg-[#4A7C59] text-white px-5 py-3 rounded-xl hover:bg-[#3B6347] transition-all shadow-lg shadow-[#4A7C59]/30 flex items-center h-full w-full sm:w-auto justify-center font-semibold"
            >
             <Plus size={20} className="mr-2" />
             Record Payment
@@ -119,10 +120,10 @@ export const Payments: React.FC = () => {
              { header: 'Amount (PKR)', accessor: (row) => row.amount.toLocaleString() },
              { header: 'Date', accessor: 'payment_date' },
              { header: 'Status', accessor: (row) => (
-                 <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                     row.payment_status === PaymentStatus.COMPLETED ? 'bg-green-100 text-green-800' :
-                     row.payment_status === PaymentStatus.PENDING ? 'bg-yellow-100 text-yellow-800' :
-                     'bg-red-100 text-red-800'
+                 <span className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wide ${
+                     row.payment_status === PaymentStatus.COMPLETED ? 'bg-[#E6F4EA] text-[#4A7C59]' :
+                     row.payment_status === PaymentStatus.PENDING ? 'bg-[#FFF8E1] text-[#7A4F01]' :
+                     'bg-[#FCE8E6] text-[#E07A5F]'
                  }`}>{row.payment_status}</span>
              )}
          ]}
@@ -161,9 +162,9 @@ export const Payments: React.FC = () => {
                 >
                     {Object.values(PaymentStatus).map(s => <option key={s} value={s}>{s}</option>)}
                 </FormSelect>
-                <div className="flex justify-end gap-3 mt-6">
-                    <button onClick={() => setIsModalOpen(false)} className="px-4 py-2 border rounded-lg hover:bg-gray-50">Cancel</button>
-                    <button onClick={handleSubmit} className="px-4 py-2 bg-[#01411C] text-white rounded-lg hover:bg-green-900">
+                <div className="flex justify-end gap-3 mt-8">
+                    <button onClick={() => setIsModalOpen(false)} className="px-5 py-2.5 border border-gray-200 rounded-xl hover:bg-gray-50 text-gray-700 font-medium">Cancel</button>
+                    <button onClick={handleSubmit} className="px-5 py-2.5 bg-[#4A7C59] text-white rounded-xl hover:bg-[#3B6347] font-medium shadow-md">
                         {editingPayment ? 'Update Payment' : 'Save Payment'}
                     </button>
                 </div>

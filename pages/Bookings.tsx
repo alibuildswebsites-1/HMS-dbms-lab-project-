@@ -149,10 +149,10 @@ export const Bookings: React.FC = () => {
       <div className="flex justify-end mb-6">
         <button
           onClick={() => openModal()}
-          className="bg-[#01411C] text-white px-4 py-2 rounded-lg hover:bg-green-900 transition flex items-center shadow-md"
+          className="bg-[#4A7C59] text-white px-5 py-2.5 rounded-xl hover:bg-[#3B6347] transition-all shadow-lg shadow-[#4A7C59]/30 flex items-center font-semibold"
         >
           <Plus size={20} className="mr-2" />
-          Create New Booking
+          Create Booking
         </button>
       </div>
 
@@ -170,11 +170,11 @@ export const Bookings: React.FC = () => {
           {
             header: 'Status',
             accessor: (row) => (
-              <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                row.booking_status === BookingStatus.CONFIRMED ? 'bg-green-100 text-green-800' :
-                row.booking_status === BookingStatus.PENDING ? 'bg-yellow-100 text-yellow-800' :
-                row.booking_status === BookingStatus.CANCELLED ? 'bg-red-100 text-red-800' :
-                'bg-blue-100 text-blue-800'
+              <span className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wide ${
+                row.booking_status === BookingStatus.CONFIRMED ? 'bg-[#E6F4EA] text-[#4A7C59]' :
+                row.booking_status === BookingStatus.PENDING ? 'bg-[#FFF8E1] text-[#7A4F01]' :
+                row.booking_status === BookingStatus.CANCELLED ? 'bg-[#FCE8E6] text-[#E07A5F]' :
+                'bg-[#E0FBFC] text-[#3D5A80]'
               }`}>
                 {row.booking_status}
               </span>
@@ -187,7 +187,7 @@ export const Bookings: React.FC = () => {
             row.booking_status !== BookingStatus.CANCELLED && row.booking_status !== BookingStatus.COMPLETED ? (
                 <button 
                     onClick={() => handleCancelBooking(row)}
-                    className="text-orange-600 hover:text-orange-800 font-medium px-2 py-1 hover:bg-orange-50 rounded mr-2"
+                    className="text-[#E07A5F] hover:text-[#C45F44] font-semibold px-3 py-1.5 hover:bg-[#FFF5F2] rounded-lg transition-colors text-xs mr-2"
                 >
                     Cancel
                 </button>
@@ -259,9 +259,9 @@ export const Bookings: React.FC = () => {
                  {Object.values(BookingStatus).map(s => <option key={s} value={s}>{s}</option>)}
             </FormSelect>
 
-            <div className="flex justify-end gap-3 mt-6">
-                <button onClick={() => setIsModalOpen(false)} className="px-4 py-2 border rounded-lg hover:bg-gray-50">Cancel</button>
-                <button onClick={handleSubmit} className="px-4 py-2 bg-[#01411C] text-white rounded-lg hover:bg-green-900">
+            <div className="flex justify-end gap-3 mt-8">
+                <button onClick={() => setIsModalOpen(false)} className="px-5 py-2.5 border border-gray-200 rounded-xl hover:bg-gray-50 text-gray-700 font-medium">Cancel</button>
+                <button onClick={handleSubmit} className="px-5 py-2.5 bg-[#4A7C59] text-white rounded-xl hover:bg-[#3B6347] font-medium shadow-md">
                 {editingBooking ? 'Update Booking' : 'Create Booking'}
                 </button>
             </div>

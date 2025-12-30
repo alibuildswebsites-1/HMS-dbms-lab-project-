@@ -101,10 +101,10 @@ export const Rooms: React.FC = () => {
       <div className="flex justify-end mb-6">
         <button
           onClick={() => openModal()}
-          className="bg-[#01411C] text-white px-4 py-2 rounded-lg hover:bg-green-900 transition flex items-center shadow-md"
+          className="bg-[#4A7C59] text-white px-5 py-2.5 rounded-xl hover:bg-[#3B6347] transition-all shadow-lg shadow-[#4A7C59]/30 flex items-center font-semibold"
         >
           <Plus size={20} className="mr-2" />
-          Add New Room
+          Add Room
         </button>
       </div>
 
@@ -112,18 +112,18 @@ export const Rooms: React.FC = () => {
         data={rooms}
         isLoading={isLoading}
         columns={[
-          { header: 'Room #', accessor: 'room_number', className: 'w-24 font-bold' },
+          { header: 'Room #', accessor: 'room_number', className: 'w-24 font-bold text-[#2C4A3B]' },
           { header: 'Type', accessor: 'room_type' },
           { header: 'Floor', accessor: 'floor_number' },
           { header: 'Price (PKR)', accessor: (row) => row.price_per_night.toLocaleString() },
           { 
             header: 'Status', 
             accessor: (row) => (
-              <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                row.room_status === RoomStatus.AVAILABLE ? 'bg-green-100 text-green-800' :
-                row.room_status === RoomStatus.OCCUPIED ? 'bg-red-100 text-red-800' :
-                row.room_status === RoomStatus.RESERVED ? 'bg-yellow-100 text-yellow-800' :
-                'bg-gray-100 text-gray-800'
+              <span className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wide ${
+                row.room_status === RoomStatus.AVAILABLE ? 'bg-[#E6F4EA] text-[#4A7C59]' :
+                row.room_status === RoomStatus.OCCUPIED ? 'bg-[#FCE8E6] text-[#E07A5F]' :
+                row.room_status === RoomStatus.RESERVED ? 'bg-[#FFF8E1] text-[#7A4F01]' :
+                'bg-gray-100 text-gray-600'
               }`}>
                 {row.room_status}
               </span>
@@ -177,9 +177,9 @@ export const Rooms: React.FC = () => {
             {Object.values(RoomStatus).map(s => <option key={s} value={s}>{s}</option>)}
           </FormSelect>
 
-          <div className="flex justify-end gap-3 mt-6">
-            <button onClick={() => setIsModalOpen(false)} className="px-4 py-2 border rounded-lg hover:bg-gray-50">Cancel</button>
-            <button onClick={handleSubmit} className="px-4 py-2 bg-[#01411C] text-white rounded-lg hover:bg-green-900">
+          <div className="flex justify-end gap-3 mt-8">
+            <button onClick={() => setIsModalOpen(false)} className="px-5 py-2.5 border border-gray-200 rounded-xl hover:bg-gray-50 text-gray-700 font-medium">Cancel</button>
+            <button onClick={handleSubmit} className="px-5 py-2.5 bg-[#4A7C59] text-white rounded-xl hover:bg-[#3B6347] font-medium shadow-md">
               {editingRoom ? 'Update Room' : 'Save Room'}
             </button>
           </div>

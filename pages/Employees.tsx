@@ -123,10 +123,10 @@ export const Employees: React.FC = () => {
         <div className="flex justify-end mb-6">
             <button
                 onClick={() => openModal()}
-                className="bg-[#01411C] text-white px-4 py-2 rounded-lg hover:bg-green-900 transition flex items-center shadow-md"
+                className="bg-[#4A7C59] text-white px-5 py-2.5 rounded-xl hover:bg-[#3B6347] transition-all shadow-lg shadow-[#4A7C59]/30 flex items-center font-semibold"
             >
                 <Plus size={20} className="mr-2" />
-                Add New Employee
+                Add Employee
             </button>
         </div>
 
@@ -140,7 +140,11 @@ export const Employees: React.FC = () => {
                 { header: 'Position', accessor: 'position' },
                 { header: 'Phone', accessor: 'phone' },
                 { header: 'Status', accessor: (row) => (
-                    <span className={`px-2 py-1 rounded-full text-xs font-semibold ${row.employee_status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
+                    <span className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wide ${
+                        row.employee_status === 'Active' ? 'bg-[#E6F4EA] text-[#4A7C59]' : 
+                        row.employee_status === 'On Leave' ? 'bg-[#FFF8E1] text-[#7A4F01]' :
+                        'bg-gray-100 text-gray-600'
+                    }`}>
                         {row.employee_status}
                     </span>
                 )}
@@ -218,9 +222,9 @@ export const Employees: React.FC = () => {
                     <option value="On Leave">On Leave</option>
                 </FormSelect>
 
-                <div className="flex justify-end gap-3 mt-6">
-                    <button onClick={() => setIsModalOpen(false)} className="px-4 py-2 border rounded-lg hover:bg-gray-50">Cancel</button>
-                    <button onClick={handleSubmit} className="px-4 py-2 bg-[#01411C] text-white rounded-lg hover:bg-green-900">
+                <div className="flex justify-end gap-3 mt-8">
+                    <button onClick={() => setIsModalOpen(false)} className="px-5 py-2.5 border border-gray-200 rounded-xl hover:bg-gray-50 text-gray-700 font-medium">Cancel</button>
+                    <button onClick={handleSubmit} className="px-5 py-2.5 bg-[#4A7C59] text-white rounded-xl hover:bg-[#3B6347] font-medium shadow-md">
                         {editingEmployee ? 'Update Employee' : 'Save Employee'}
                     </button>
                 </div>
@@ -230,26 +234,26 @@ export const Employees: React.FC = () => {
         {/* View Modal */}
         <Modal isOpen={!!viewingEmployee} onClose={() => setViewingEmployee(null)} title="Employee Details">
             {viewingEmployee && (
-                <div className="space-y-4">
-                    <div className="flex items-center gap-4 mb-6">
-                        <div className="w-16 h-16 bg-[#01411C] rounded-full flex items-center justify-center text-white text-2xl font-bold">
+                <div className="space-y-6">
+                    <div className="flex items-center gap-4 mb-2">
+                        <div className="w-16 h-16 bg-[#E6F4EA] rounded-full flex items-center justify-center text-[#4A7C59] text-2xl font-bold border border-[#4A7C59]/20">
                             {viewingEmployee.employee_name.charAt(0)}
                         </div>
                         <div>
-                            <h3 className="text-xl font-bold">{viewingEmployee.employee_name}</h3>
+                            <h3 className="text-xl font-bold text-[#2C4A3B]">{viewingEmployee.employee_name}</h3>
                             <p className="text-gray-500">{viewingEmployee.position}</p>
-                            <p className="text-sm text-green-700 font-medium">{viewingEmployee.email}</p>
+                            <p className="text-sm text-[#4A7C59] font-medium">{viewingEmployee.email}</p>
                         </div>
                     </div>
-                    <div className="grid grid-cols-2 gap-4 border-t pt-4">
-                        <div><p className="text-sm text-gray-500">Department</p><p className="font-medium">{viewingEmployee.department_name || getDepartmentName(viewingEmployee.department_id)}</p></div>
-                        <div><p className="text-sm text-gray-500">Status</p><p className="font-medium">{viewingEmployee.employee_status}</p></div>
-                        <div><p className="text-sm text-gray-500">Phone</p><p className="font-medium">{viewingEmployee.phone || '-'}</p></div>
-                        <div><p className="text-sm text-gray-500">Salary</p><p className="font-medium">PKR {viewingEmployee.salary.toLocaleString()}</p></div>
-                        <div><p className="text-sm text-gray-500">Hire Date</p><p className="font-medium">{viewingEmployee.hire_date}</p></div>
+                    <div className="grid grid-cols-2 gap-6 border-t border-gray-100 pt-6">
+                        <div><p className="text-xs font-bold text-gray-400 uppercase tracking-wide">Department</p><p className="font-medium text-gray-800 mt-1">{viewingEmployee.department_name || getDepartmentName(viewingEmployee.department_id)}</p></div>
+                        <div><p className="text-xs font-bold text-gray-400 uppercase tracking-wide">Status</p><p className="font-medium text-gray-800 mt-1">{viewingEmployee.employee_status}</p></div>
+                        <div><p className="text-xs font-bold text-gray-400 uppercase tracking-wide">Phone</p><p className="font-medium text-gray-800 mt-1">{viewingEmployee.phone || '-'}</p></div>
+                        <div><p className="text-xs font-bold text-gray-400 uppercase tracking-wide">Salary</p><p className="font-medium text-gray-800 mt-1">PKR {viewingEmployee.salary.toLocaleString()}</p></div>
+                        <div><p className="text-xs font-bold text-gray-400 uppercase tracking-wide">Hire Date</p><p className="font-medium text-gray-800 mt-1">{viewingEmployee.hire_date}</p></div>
                     </div>
-                    <div className="mt-6 flex justify-end">
-                        <button onClick={() => setViewingEmployee(null)} className="px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200">Close</button>
+                    <div className="mt-8 flex justify-end">
+                        <button onClick={() => setViewingEmployee(null)} className="px-6 py-2.5 bg-gray-100 rounded-xl hover:bg-gray-200 font-medium text-gray-700">Close</button>
                     </div>
                 </div>
             )}

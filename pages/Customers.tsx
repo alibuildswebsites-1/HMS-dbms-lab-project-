@@ -109,10 +109,10 @@ export const Customers: React.FC = () => {
       <div className="flex justify-end mb-6">
         <button
           onClick={() => openModal()}
-          className="bg-[#01411C] text-white px-4 py-2 rounded-lg hover:bg-green-900 transition flex items-center shadow-md"
+          className="bg-[#4A7C59] text-white px-5 py-2.5 rounded-xl hover:bg-[#3B6347] transition-all shadow-lg shadow-[#4A7C59]/30 flex items-center font-semibold"
         >
           <Plus size={20} className="mr-2" />
-          Add New Customer
+          Add Customer
         </button>
       </div>
 
@@ -180,9 +180,9 @@ export const Customers: React.FC = () => {
             value={formData.address || ''}
             onChange={(e) => setFormData({ ...formData, address: e.target.value })}
           />
-          <div className="flex justify-end gap-3 mt-6">
-            <button onClick={() => setIsModalOpen(false)} className="px-4 py-2 border rounded-lg hover:bg-gray-50">Cancel</button>
-            <button onClick={handleSubmit} className="px-4 py-2 bg-[#01411C] text-white rounded-lg hover:bg-green-900">
+          <div className="flex justify-end gap-3 mt-8">
+            <button onClick={() => setIsModalOpen(false)} className="px-5 py-2.5 border border-gray-200 rounded-xl hover:bg-gray-50 text-gray-700 font-medium">Cancel</button>
+            <button onClick={handleSubmit} className="px-5 py-2.5 bg-[#4A7C59] text-white rounded-xl hover:bg-[#3B6347] font-medium shadow-md">
               {editingCustomer ? 'Update Customer' : 'Save Customer'}
             </button>
           </div>
@@ -192,17 +192,24 @@ export const Customers: React.FC = () => {
       {/* View Modal */}
       <Modal isOpen={!!viewingCustomer} onClose={() => setViewingCustomer(null)} title="Customer Details">
         {viewingCustomer && (
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-               <div><p className="text-sm text-gray-500">Name</p><p className="font-medium">{viewingCustomer.customer_name}</p></div>
-               <div><p className="text-sm text-gray-500">Email</p><p className="font-medium">{viewingCustomer.email}</p></div>
-               <div><p className="text-sm text-gray-500">Phone</p><p className="font-medium">{viewingCustomer.phone}</p></div>
-               <div><p className="text-sm text-gray-500">CNIC</p><p className="font-medium">{viewingCustomer.id}</p></div>
-               <div><p className="text-sm text-gray-500">Nationality</p><p className="font-medium">{viewingCustomer.nationality}</p></div>
-               <div className="col-span-2"><p className="text-sm text-gray-500">Address</p><p className="font-medium">{viewingCustomer.address}</p></div>
+          <div className="space-y-6">
+            <div className="flex items-center gap-4 mb-2">
+                <div className="w-16 h-16 rounded-full bg-[#E6F4EA] flex items-center justify-center text-[#4A7C59] text-xl font-bold border border-[#4A7C59]/20">
+                    {viewingCustomer.customer_name.charAt(0)}
+                </div>
+                <div>
+                    <h3 className="text-xl font-bold text-[#2C4A3B]">{viewingCustomer.customer_name}</h3>
+                    <p className="text-gray-500">{viewingCustomer.email}</p>
+                </div>
             </div>
-            <div className="mt-6 flex justify-end">
-              <button onClick={() => setViewingCustomer(null)} className="px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200">Close</button>
+            <div className="grid grid-cols-2 gap-x-6 gap-y-6 border-t border-gray-100 pt-6">
+               <div><p className="text-xs font-bold text-gray-400 uppercase tracking-wide">Phone</p><p className="font-medium text-gray-800 mt-1">{viewingCustomer.phone}</p></div>
+               <div><p className="text-xs font-bold text-gray-400 uppercase tracking-wide">CNIC</p><p className="font-medium text-gray-800 mt-1">{viewingCustomer.id}</p></div>
+               <div><p className="text-xs font-bold text-gray-400 uppercase tracking-wide">Nationality</p><p className="font-medium text-gray-800 mt-1">{viewingCustomer.nationality}</p></div>
+               <div className="col-span-2"><p className="text-xs font-bold text-gray-400 uppercase tracking-wide">Address</p><p className="font-medium text-gray-800 mt-1">{viewingCustomer.address}</p></div>
+            </div>
+            <div className="mt-8 flex justify-end">
+              <button onClick={() => setViewingCustomer(null)} className="px-6 py-2.5 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 font-medium">Close</button>
             </div>
           </div>
         )}

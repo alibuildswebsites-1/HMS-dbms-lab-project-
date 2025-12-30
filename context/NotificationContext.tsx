@@ -39,25 +39,25 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({ childr
   return (
     <NotificationContext.Provider value={{ showNotification }}>
       {children}
-      <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2">
+      <div className="fixed bottom-6 right-6 z-[60] flex flex-col gap-3">
         {notifications.map((n) => (
           <div
             key={n.id}
-            className={`flex items-center w-80 p-4 rounded-lg shadow-lg text-white transform transition-all duration-300 ${
-              n.type === 'success' ? 'bg-[#01411C]' :
-              n.type === 'error' ? 'bg-red-600' :
-              n.type === 'warning' ? 'bg-[#FDB913] text-black' :
-              'bg-blue-600'
+            className={`flex items-center w-80 p-4 rounded-xl shadow-xl transform transition-all duration-300 border ${
+              n.type === 'success' ? 'bg-[#E6F4EA] border-[#4A7C59] text-[#1E4620]' :
+              n.type === 'error' ? 'bg-[#FCE8E6] border-[#E07A5F] text-[#8C1D18]' :
+              n.type === 'warning' ? 'bg-[#FFF8E1] border-[#F4D35E] text-[#7A4F01]' :
+              'bg-[#E0FBFC] border-[#3D5A80] text-[#1D3557]'
             }`}
           >
             <div className="mr-3">
-              {n.type === 'success' && <CheckCircle size={20} />}
-              {n.type === 'error' && <AlertCircle size={20} />}
-              {n.type === 'warning' && <AlertTriangle size={20} />}
-              {n.type === 'info' && <Info size={20} />}
+              {n.type === 'success' && <CheckCircle size={22} className="text-[#4A7C59]" />}
+              {n.type === 'error' && <AlertCircle size={22} className="text-[#E07A5F]" />}
+              {n.type === 'warning' && <AlertTriangle size={22} className="text-[#F4D35E]" />}
+              {n.type === 'info' && <Info size={22} className="text-[#3D5A80]" />}
             </div>
-            <div className="flex-1 text-sm font-medium">{n.message}</div>
-            <button onClick={() => removeNotification(n.id)} className="ml-2 hover:opacity-75">
+            <div className="flex-1 text-sm font-semibold">{n.message}</div>
+            <button onClick={() => removeNotification(n.id)} className="ml-2 opacity-60 hover:opacity-100 transition-opacity">
               <X size={16} />
             </button>
           </div>
