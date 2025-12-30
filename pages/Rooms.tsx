@@ -24,11 +24,7 @@ export const Rooms: React.FC = () => {
       setRooms(data);
     } catch (error) {
       showNotification('Failed to fetch rooms', 'error');
-      setRooms([
-        { room_id: 1, room_number: '101', room_type: RoomType.SINGLE, floor_number: 1, price_per_night: 5000, room_status: RoomStatus.AVAILABLE },
-        { room_id: 2, room_number: '102', room_type: RoomType.DOUBLE, floor_number: 1, price_per_night: 8000, room_status: RoomStatus.OCCUPIED },
-        { room_id: 3, room_number: '201', room_type: RoomType.DELUXE, floor_number: 2, price_per_night: 15000, room_status: RoomStatus.MAINTENANCE },
-      ]);
+      setRooms([]);
     } finally {
       setIsLoading(false);
     }

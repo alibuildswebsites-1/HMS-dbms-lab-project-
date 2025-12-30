@@ -26,11 +26,7 @@ export const Customers: React.FC = () => {
       setCustomers(data);
     } catch (error) {
       showNotification('Failed to fetch customers', 'error');
-      // Mock Data for Demo
-      setCustomers([
-        { customer_id: 1, customer_name: 'Ali Khan', email: 'ali@example.com', phone: '03001234567', address: 'Lahore', nationality: 'Pakistani', cnic_id: '35202-1234567-1' },
-        { customer_id: 2, customer_name: 'Sara Ahmed', email: 'sara@example.com', phone: '03217654321', address: 'Karachi', nationality: 'Pakistani', cnic_id: '42101-7654321-2' },
-      ]);
+      setCustomers([]);
     } finally {
       setIsLoading(false);
     }

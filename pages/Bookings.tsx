@@ -52,12 +52,10 @@ export const Bookings: React.FC = () => {
       setCustomers(customersData);
       setRooms(roomsData);
     } catch (error) {
-       // Mock fallback
-       setBookings([
-         { booking_id: 1, customer_id: 1, room_id: 2, customer_name: 'Ali Khan', room_number: '102', room_type: 'Double', check_in_date: '2023-10-01', check_out_date: '2023-10-05', number_of_guests: 2, total_amount: 32000, booking_status: BookingStatus.CONFIRMED },
-       ]);
-       setCustomers([{ customer_id: 1, customer_name: 'Ali Khan' } as any]);
-       setRooms([{ room_id: 2, room_number: '102', price_per_night: 8000 } as any]);
+       showNotification('Failed to fetch data', 'error');
+       setBookings([]);
+       setCustomers([]);
+       setRooms([]);
     } finally {
       setIsLoading(false);
     }

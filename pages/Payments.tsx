@@ -26,10 +26,9 @@ export const Payments: React.FC = () => {
         setPayments(payData);
         setBookings(bookData);
     } catch (e) {
-        setPayments([
-            { payment_id: 1, booking_id: 1, customer_name: 'Ali Khan', amount: 15000, payment_date: '2023-10-02', payment_status: PaymentStatus.COMPLETED }
-        ]);
-        setBookings([{booking_id: 1, customer_name: 'Ali Khan'} as any]);
+        showNotification('Failed to fetch data', 'error');
+        setPayments([]);
+        setBookings([]);
     } finally {
         setIsLoading(false);
     }
@@ -81,14 +80,14 @@ export const Payments: React.FC = () => {
 
   return (
     <Layout title="Payments">
-       <div className="flex justify-between items-end mb-6">
-           <div className="bg-[#01411C] text-[#FDB913] p-4 rounded-lg shadow-md">
+       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-6">
+           <div className="bg-[#01411C] text-[#FDB913] p-4 rounded-lg shadow-md w-full sm:w-auto">
                <p className="text-sm font-medium uppercase tracking-wider text-white">Total Revenue Collected</p>
                <h2 className="text-3xl font-bold mt-1">PKR {totalRevenue.toLocaleString()}</h2>
            </div>
            <button
             onClick={() => openModal()}
-            className="bg-[#01411C] text-white px-4 py-2 rounded-lg hover:bg-green-900 transition flex items-center shadow-md h-10"
+            className="bg-[#01411C] text-white px-4 py-2 rounded-lg hover:bg-green-900 transition flex items-center shadow-md h-10 w-full sm:w-auto justify-center"
            >
             <Plus size={20} className="mr-2" />
             Record Payment

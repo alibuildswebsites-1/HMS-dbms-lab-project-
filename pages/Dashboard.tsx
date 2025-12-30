@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Layout } from '../components/Layout';
 import { Users, BedDouble, Key, CalendarCheck, Briefcase, DollarSign } from 'lucide-react';
-import { Stats } from '../types';
+import { Stats, RoomStatus, PaymentStatus } from '../types';
 import { api } from '../services/api';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
@@ -27,34 +27,45 @@ export const Dashboard: React.FC = () => {
     totalRevenue: 0
   });
 
-  // Mock data for chart
+  // Mock data for chart - kept as visual placeholder for now, but could be connected to API similarly
   const chartData = [
-    { name: 'Mon', revenue: 4000 },
-    { name: 'Tue', revenue: 3000 },
-    { name: 'Wed', revenue: 2000 },
-    { name: 'Thu', revenue: 2780 },
-    { name: 'Fri', revenue: 1890 },
-    { name: 'Sat', revenue: 2390 },
-    { name: 'Sun', revenue: 3490 },
+    { name: 'Mon', revenue: 0 },
+    { name: 'Tue', revenue: 0 },
+    { name: 'Wed', revenue: 0 },
+    { name: 'Thu', revenue: 0 },
+    { name: 'Fri', revenue: 0 },
+    { name: 'Sat', revenue: 0 },
+    { name: 'Sun', revenue: 0 },
   ];
 
   useEffect(() => {
-    // Simulate fetching stats, or use api.get('/stats')
-    // For demo purposes, we will mock if API fails or just use static values for initial render
     const fetchStats = async () => {
       try {
-        const data = await api.get<Stats>('/stats');
-        setStats(data);
-      } catch (e) {
-        // Fallback mock data if API is not running
+        // Fetch all data in parallel to calculate stats
+        const [customers, rooms, bookings, payments, employees] = await Promise.all([
+          api.get<any[]>('/customers'),
+          api.get<any[]>('/rooms'),
+          api.get<any[]>('/bookings'),
+          api.get<any[]>('/payments'),
+          api.get<any[]>('/employees')
+        ]);
+
+        const totalRevenue = payments
+          .filter((p: any) => p.payment_status === PaymentStatus.COMPLETED)
+          .reduce((sum: number, p: any) => sum + Number(p.amount), 0);
+
+        const availableRooms = rooms.filter((r: any) => r.room_status === RoomStatus.AVAILABLE).length;
+
         setStats({
-          totalCustomers: 124,
-          totalRooms: 50,
-          availableRooms: 12,
-          totalBookings: 89,
-          totalEmployees: 24,
-          totalRevenue: 1540000
+          totalCustomers: customers.length,
+          totalRooms: rooms.length,
+          availableRooms: availableRooms,
+          totalBookings: bookings.length,
+          totalEmployees: employees.length,
+          totalRevenue: totalRevenue
         });
+      } catch (e) {
+        console.error("Failed to fetch dashboard data", e);
       }
     };
     fetchStats();
@@ -72,17 +83,19 @@ export const Dashboard: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 h-96">
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 h-96 flex flex-col">
           <h3 className="text-lg font-bold text-gray-800 mb-4">Weekly Revenue</h3>
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-              <XAxis dataKey="name" />
-              <YAxis />
-              <Tooltip cursor={{fill: '#f9fafb'}} />
-              <Bar dataKey="revenue" fill="#01411C" radius={[4, 4, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
+          <div className="flex-1 w-full min-h-0">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={chartData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                <XAxis dataKey="name" />
+                <YAxis />
+                <Tooltip cursor={{fill: '#f9fafb'}} />
+                <Bar dataKey="revenue" fill="#01411C" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
         </div>
         
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 h-96 flex flex-col justify-center items-center text-center">
@@ -90,12 +103,12 @@ export const Dashboard: React.FC = () => {
             <p className="text-gray-500">All systems operational.</p>
             <div className="mt-6 flex gap-4">
                  <div className="p-4 bg-green-50 rounded-lg">
-                    <span className="block text-2xl font-bold text-green-700">98%</span>
-                    <span className="text-xs text-green-600">Occupancy Rate</span>
+                    <span className="block text-2xl font-bold text-green-700">100%</span>
+                    <span className="text-xs text-green-600">Uptime</span>
                  </div>
                  <div className="p-4 bg-yellow-50 rounded-lg">
-                    <span className="block text-2xl font-bold text-yellow-700">4.8</span>
-                    <span className="text-xs text-yellow-600">Avg Rating</span>
+                    <span className="block text-2xl font-bold text-yellow-700">0ms</span>
+                    <span className="text-xs text-yellow-600">Latency</span>
                  </div>
             </div>
         </div>

@@ -3,11 +3,13 @@ import { Layout } from '../components/Layout';
 import { DataTable, Modal } from '../components/Shared';
 import { Employee } from '../types';
 import { api } from '../services/api';
+import { useNotification } from '../context/NotificationContext';
 
 export const Employees: React.FC = () => {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [viewingEmployee, setViewingEmployee] = useState<Employee | null>(null);
+  const { showNotification } = useNotification();
 
   useEffect(() => {
       const fetchEmployees = async () => {
@@ -16,10 +18,8 @@ export const Employees: React.FC = () => {
               const data = await api.get<Employee[]>('/employees');
               setEmployees(data);
           } catch (e) {
-              setEmployees([
-                  { employee_id: 1, employee_name: 'John Doe', department_name: 'Housekeeping', position: 'Supervisor', phone: '0300-0000000', email: 'john@hotel.com', salary: 45000, hire_date: '2022-01-01', employee_status: 'Active' },
-                  { employee_id: 2, employee_name: 'Jane Smith', department_name: 'Front Desk', position: 'Receptionist', phone: '0300-1111111', email: 'jane@hotel.com', salary: 50000, hire_date: '2022-03-15', employee_status: 'Active' }
-              ]);
+              showNotification('Failed to fetch employees', 'error');
+              setEmployees([]);
           } finally {
               setIsLoading(false);
           }
