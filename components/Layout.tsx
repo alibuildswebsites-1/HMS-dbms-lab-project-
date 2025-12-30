@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { 
   LayoutDashboard, Users, BedDouble, CalendarCheck, 
-  CreditCard, Briefcase, LogOut, User, Menu, X, Database
+  CreditCard, Briefcase, LogOut, User, Menu, X, Database, Terminal
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
@@ -29,6 +29,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, title }) => {
     { path: '/bookings', label: 'Bookings', icon: CalendarCheck },
     { path: '/payments', label: 'Payments', icon: CreditCard },
     { path: '/employees', label: 'Employees', icon: Briefcase },
+    { path: '/sql-console', label: 'SQL Console', icon: Terminal },
   ];
 
   // Close mobile menu when route changes

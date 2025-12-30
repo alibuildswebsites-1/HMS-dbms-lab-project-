@@ -4,7 +4,7 @@ import { DataTable, Modal, ConfirmDialog, FormInput, FormSelect } from '../compo
 import { Booking, BookingStatus, Customer, Room, RoomStatus } from '../types';
 import { api } from '../services/api';
 import { useNotification } from '../context/NotificationContext';
-import { Plus } from 'lucide-react';
+import { Plus, Filter, RotateCcw } from 'lucide-react';
 
 export const Bookings: React.FC = () => {
   const [bookings, setBookings] = useState<Booking[]>([]);
@@ -15,6 +15,13 @@ export const Bookings: React.FC = () => {
   const [editingBooking, setEditingBooking] = useState<Booking | null>(null);
   const [deletingBooking, setDeletingBooking] = useState<Booking | null>(null);
   const { showNotification } = useNotification();
+
+  // Filters
+  const [showFilters, setShowFilters] = useState(false);
+  const [statusFilter, setStatusFilter] = useState('');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [customerSearch, setCustomerSearch] = useState('');
 
   const [formData, setFormData] = useState<Partial<Booking>>({});
   
@@ -65,6 +72,31 @@ export const Bookings: React.FC = () => {
   useEffect(() => {
     fetchData();
   }, []);
+
+  // Helper to find names (since API might return IDs only)
+  const getCustomerName = (id: number) => customers.find(c => c.customer_id === id)?.customer_name || String(id);
+  const getRoomNumber = (id: number) => rooms.find(r => r.room_id === id)?.room_number || String(id);
+
+  const filteredBookings = useMemo(() => {
+      return bookings.filter(b => {
+          const cName = b.customer_name || getCustomerName(b.customer_id);
+          const matchesCustomer = customerSearch === '' || cName.toLowerCase().includes(customerSearch.toLowerCase());
+          const matchesStatus = statusFilter === '' || b.booking_status === statusFilter;
+          
+          let matchesDate = true;
+          if (startDate && b.check_in_date < startDate) matchesDate = false;
+          if (endDate && b.check_in_date > endDate) matchesDate = false;
+
+          return matchesCustomer && matchesStatus && matchesDate;
+      });
+  }, [bookings, customerSearch, statusFilter, startDate, endDate, customers]);
+
+  const clearFilters = () => {
+      setCustomerSearch('');
+      setStatusFilter('');
+      setStartDate('');
+      setEndDate('');
+  };
 
   const handleSubmit = async () => {
     // Map to PascalCase for API
@@ -140,13 +172,28 @@ export const Bookings: React.FC = () => {
     setIsModalOpen(true);
   };
 
-  // Helper to find names (since API might return IDs only)
-  const getCustomerName = (id: number) => customers.find(c => c.customer_id === id)?.customer_name || id;
-  const getRoomNumber = (id: number) => rooms.find(r => r.room_id === id)?.room_number || id;
-
   return (
     <Layout title="Bookings">
-      <div className="flex justify-end mb-6">
+       {/* Actions */}
+       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+         <div className="flex gap-2">
+            <button
+            onClick={() => setShowFilters(!showFilters)}
+            className={`px-4 py-2.5 rounded-xl border flex items-center transition-all duration-200 ${showFilters ? 'bg-[#2C4A3B] text-white border-[#2C4A3B]' : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'}`}
+            >
+            <Filter size={18} className="mr-2" />
+            Filters
+            </button>
+            {(statusFilter || customerSearch || startDate || endDate) && (
+                 <button
+                 onClick={clearFilters}
+                 className="px-4 py-2.5 rounded-xl border border-red-100 text-red-600 bg-red-50 hover:bg-red-100 flex items-center transition-all duration-200"
+                 >
+                 <RotateCcw size={18} className="mr-2" />
+                 Reset
+                 </button>
+            )}
+        </div>
         <button
           onClick={() => openModal()}
           className="bg-[#4A7C59] text-white px-5 py-2.5 rounded-xl hover:bg-[#3B6347] transition-all shadow-lg shadow-[#4A7C59]/30 flex items-center font-semibold"
@@ -156,8 +203,55 @@ export const Bookings: React.FC = () => {
         </button>
       </div>
 
+       {/* Advanced Filters */}
+       {showFilters && (
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-6 animate-in fade-in slide-in-from-top-2">
+           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div>
+                    <label className="block text-sm font-semibold text-[#2C4A3B] mb-2">Customer Name</label>
+                    <input 
+                        type="text"
+                        placeholder="Search customer..."
+                        value={customerSearch}
+                        onChange={(e) => setCustomerSearch(e.target.value)}
+                        className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#4A7C59]/20 focus:border-[#4A7C59] outline-none transition-all"
+                     />
+                </div>
+                <div>
+                    <label className="block text-sm font-semibold text-[#2C4A3B] mb-2">Status</label>
+                    <select
+                        value={statusFilter}
+                        onChange={(e) => setStatusFilter(e.target.value)}
+                        className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#4A7C59]/20 focus:border-[#4A7C59] outline-none transition-all"
+                    >
+                        <option value="">All Statuses</option>
+                        {Object.values(BookingStatus).map(s => <option key={s} value={s}>{s}</option>)}
+                    </select>
+                </div>
+                <div>
+                     <label className="block text-sm font-semibold text-[#2C4A3B] mb-2">From Date</label>
+                     <input 
+                        type="date"
+                        value={startDate}
+                        onChange={(e) => setStartDate(e.target.value)}
+                        className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#4A7C59]/20 focus:border-[#4A7C59] outline-none transition-all"
+                     />
+                </div>
+                <div>
+                     <label className="block text-sm font-semibold text-[#2C4A3B] mb-2">To Date</label>
+                     <input 
+                        type="date"
+                        value={endDate}
+                        onChange={(e) => setEndDate(e.target.value)}
+                        className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#4A7C59]/20 focus:border-[#4A7C59] outline-none transition-all"
+                     />
+                </div>
+           </div>
+        </div>
+      )}
+
       <DataTable<Booking>
-        data={bookings}
+        data={filteredBookings}
         isLoading={isLoading}
         columns={[
           { header: 'ID', accessor: 'booking_id', className: 'w-16' },
@@ -193,7 +287,7 @@ export const Bookings: React.FC = () => {
                 </button>
             ) : null
         )}
-        searchPlaceholder="Search bookings..."
+        searchPlaceholder="Quick filter..."
       />
 
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={editingBooking ? 'Edit Booking' : 'Create Booking'}>

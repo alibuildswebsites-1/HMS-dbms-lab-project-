@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { Layout } from '../components/Layout';
 import { DataTable, Modal, ConfirmDialog, FormInput } from '../components/Shared';
 import { Customer } from '../types';
 import { api } from '../services/api';
 import { useNotification } from '../context/NotificationContext';
-import { Plus } from 'lucide-react';
+import { Plus, Filter, RotateCcw } from 'lucide-react';
 
 export const Customers: React.FC = () => {
   const [customers, setCustomers] = useState<Customer[]>([]);
@@ -15,6 +15,11 @@ export const Customers: React.FC = () => {
   const [deletingCustomer, setDeletingCustomer] = useState<Customer | null>(null);
   const { showNotification } = useNotification();
 
+  // Filters State
+  const [searchQuery, setSearchQuery] = useState('');
+  const [nationalityFilter, setNationalityFilter] = useState('');
+  const [showFilters, setShowFilters] = useState(false);
+
   // Form State
   const [formData, setFormData] = useState<Partial<Customer>>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -23,7 +28,6 @@ export const Customers: React.FC = () => {
     setIsLoading(true);
     try {
       const data = await api.get<Customer[]>('http://192.168.43.171:5000/api/customers');
-      // Sort by customer_id ascending
       setCustomers(data.sort((a, b) => (a.customer_id || 0) - (b.customer_id || 0)));
     } catch (error) {
       showNotification('Failed to fetch customers', 'error');
@@ -35,8 +39,33 @@ export const Customers: React.FC = () => {
 
   useEffect(() => {
     fetchCustomers();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Derived State for Filtering
+  const uniqueNationalities = useMemo(() => {
+    return Array.from(new Set(customers.map(c => c.nationality).filter(Boolean))).sort();
+  }, [customers]);
+
+  const filteredCustomers = useMemo(() => {
+    return customers.filter(customer => {
+      const matchesSearch = 
+        searchQuery === '' || 
+        customer.customer_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        customer.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        customer.phone.includes(searchQuery);
+      
+      const matchesNationality = 
+        nationalityFilter === '' || 
+        customer.nationality === nationalityFilter;
+
+      return matchesSearch && matchesNationality;
+    });
+  }, [customers, searchQuery, nationalityFilter]);
+
+  const clearFilters = () => {
+    setSearchQuery('');
+    setNationalityFilter('');
+  };
 
   const validate = () => {
     const newErrors: Record<string, string> = {};
@@ -53,14 +82,13 @@ export const Customers: React.FC = () => {
   const handleSubmit = async () => {
     if (!validate()) return;
 
-    // Map to PascalCase for API
     const payload = {
       Customer_Name: formData.customer_name,
       Email: formData.email,
       Phone: formData.phone,
       Address: formData.address,
       Nationality: formData.nationality,
-      ID: formData.id // Mapping frontend 'id' (CNIC) to backend 'ID'
+      ID: formData.id
     };
 
     try {
@@ -106,7 +134,26 @@ export const Customers: React.FC = () => {
 
   return (
     <Layout title="Customers">
-      <div className="flex justify-end mb-6">
+      {/* Actions Bar */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+        <div className="flex gap-2">
+            <button
+            onClick={() => setShowFilters(!showFilters)}
+            className={`px-4 py-2.5 rounded-xl border flex items-center transition-all duration-200 ${showFilters ? 'bg-[#2C4A3B] text-white border-[#2C4A3B]' : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'}`}
+            >
+            <Filter size={18} className="mr-2" />
+            Filters
+            </button>
+            {(searchQuery || nationalityFilter) && (
+                 <button
+                 onClick={clearFilters}
+                 className="px-4 py-2.5 rounded-xl border border-red-100 text-red-600 bg-red-50 hover:bg-red-100 flex items-center transition-all duration-200"
+                 >
+                 <RotateCcw size={18} className="mr-2" />
+                 Reset
+                 </button>
+            )}
+        </div>
         <button
           onClick={() => openModal()}
           className="bg-[#4A7C59] text-white px-5 py-2.5 rounded-xl hover:bg-[#3B6347] transition-all shadow-lg shadow-[#4A7C59]/30 flex items-center font-semibold"
@@ -116,9 +163,42 @@ export const Customers: React.FC = () => {
         </button>
       </div>
 
+      {/* Advanced Filters */}
+      {showFilters && (
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-6 animate-in fade-in slide-in-from-top-2">
+           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div>
+                    <label className="block text-sm font-semibold text-[#2C4A3B] mb-2">Search</label>
+                    <input 
+                        type="text"
+                        placeholder="Name, Email, or Phone"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#4A7C59]/20 focus:border-[#4A7C59] outline-none transition-all"
+                    />
+                </div>
+                <div>
+                    <label className="block text-sm font-semibold text-[#2C4A3B] mb-2">Nationality</label>
+                    <select
+                        value={nationalityFilter}
+                        onChange={(e) => setNationalityFilter(e.target.value)}
+                        className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#4A7C59]/20 focus:border-[#4A7C59] outline-none transition-all"
+                    >
+                        <option value="">All Nationalities</option>
+                        {uniqueNationalities.map(nat => (
+                            <option key={nat} value={nat}>{nat}</option>
+                        ))}
+                    </select>
+                </div>
+           </div>
+        </div>
+      )}
+
       <DataTable<Customer>
-        data={customers}
+        data={filteredCustomers}
         isLoading={isLoading}
+        // Disable internal search as we have external logic
+        searchPlaceholder="Filter results..."
         columns={[
           { header: 'ID', accessor: 'customer_id', className: 'w-16' },
           { header: 'Name', accessor: 'customer_name' },
@@ -130,7 +210,6 @@ export const Customers: React.FC = () => {
         onEdit={(item) => openModal(item)}
         onDelete={(item) => setDeletingCustomer(item)}
         onView={(item) => setViewingCustomer(item)}
-        searchPlaceholder="Search customers..."
       />
 
       {/* Add/Edit Modal */}
