@@ -8,6 +8,14 @@ interface QueryResult {
   [key: string]: any;
 }
 
+interface SqlApiResponse {
+  success: boolean;
+  rowCount: number;
+  data: QueryResult[];
+  executionTime: string;
+  message?: string;
+}
+
 export const SqlConsole: React.FC = () => {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<QueryResult[] | null>(null);
@@ -38,23 +46,25 @@ export const SqlConsole: React.FC = () => {
 
     try {
       // Using the specific IP requested for the SQL console
-      const data = await api.post<QueryResult[]>('http://192.168.100.14:5000/api/execute-query', { query });
+      const response = await api.post<SqlApiResponse>('http://192.168.100.14:5000/api/execute-query', { query });
       
       const endTime = performance.now();
       setExecutionTime(Math.round(endTime - startTime));
       
-      // Handle response format variations (if API returns object with 'data' key or direct array)
-      const rows = Array.isArray(data) ? data : (data as any).data || [];
-      
-      setResults(rows);
-      
-      // Update history
-      setHistory(prev => {
-        const newHistory = [query, ...prev.filter(q => q !== query)];
-        return newHistory.slice(0, 5);
-      });
+      if (response.success) {
+        setResults(response.data);
+        
+        // Update history
+        setHistory(prev => {
+          const newHistory = [query, ...prev.filter(q => q !== query)];
+          return newHistory.slice(0, 5);
+        });
 
-      showNotification("Query executed successfully", "success");
+        showNotification(`Query executed successfully (${response.rowCount} rows)`, "success");
+      } else {
+        throw new Error(response.message || "Query execution failed.");
+      }
+
     } catch (err: any) {
       console.error(err);
       setError(err.message || "An error occurred while executing the query");
