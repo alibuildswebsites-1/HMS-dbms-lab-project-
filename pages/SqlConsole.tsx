@@ -38,7 +38,7 @@ export const SqlConsole: React.FC = () => {
 
     try {
       // Corrected IP address to match the rest of the application
-      const response = await api.post<any>('http://192.168.43.171:5000/api/execute-query', { query });
+      const response = await api.post<any>('http://192.168.43.54:5000/api/execute-query', { query });
       
       const endTime = performance.now();
       setExecutionTime(Math.round(endTime - startTime));

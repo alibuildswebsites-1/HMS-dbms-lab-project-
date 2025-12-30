@@ -40,7 +40,7 @@ export const Dashboard: React.FC = () => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const data = await api.get<Stats>('http://192.168.43.171:5000/api/stats');
+        const data = await api.get<Stats>('http://192.168.43.54:5000/api/stats');
         setStats(data);
       } catch (e) {
         console.error("Failed to fetch dashboard stats", e);
