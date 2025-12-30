@@ -8,12 +8,24 @@ interface QueryResult {
   [key: string]: any;
 }
 
+interface QueryResponse {
+  success: boolean;
+  queryType: string;
+  data?: QueryResult[];
+  affectedRows?: number;
+  rowCount?: number;
+  executionTime?: string;
+  message?: string;
+  error?: string;
+}
+
 export const SqlConsole: React.FC = () => {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<QueryResult[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [executionTime, setExecutionTime] = useState<number>(0);
+  const [queryInfo, setQueryInfo] = useState<string>('');
   const [history, setHistory] = useState<string[]>([]);
   const { showNotification } = useNotification();
 
@@ -34,32 +46,40 @@ export const SqlConsole: React.FC = () => {
     setIsLoading(true);
     setError(null);
     setResults(null);
+    setQueryInfo('');
     const startTime = performance.now();
 
     try {
-      // Corrected IP address to match the rest of the application
-      const response = await api.post<any>('http://192.168.43.54:5000/api/execute-query', { query });
+      const response = await api.post<QueryResponse>('http://192.168.43.54:5000/api/execute-query', { query });
       
       const endTime = performance.now();
       setExecutionTime(Math.round(endTime - startTime));
       
-      let rows: QueryResult[] = [];
-
-      // Flexible response parsing: handle raw array or { data: [...] } or { success: true, data: [...] }
-      if (Array.isArray(response)) {
-        rows = response;
-      } else if (response.data && Array.isArray(response.data)) {
-        rows = response.data;
-      } else if (response.results && Array.isArray(response.results)) {
-        rows = response.results;
-      } else if (response.rows && Array.isArray(response.rows)) {
-        rows = response.rows;
-      } else if (typeof response === 'object') {
-        // If it returns a single object that isn't wrapped (e.g. OKPacket for INSERT/UPDATE)
-        rows = [response];
+      // FIXED: Handle different response types properly
+      if (response.success) {
+        const queryType = response.queryType?.toUpperCase() || '';
+        
+        // Handle SELECT queries (with data)
+        if (queryType === 'SELECT' || queryType === 'SHOW' || queryType === 'DESCRIBE') {
+          const rows = response.data || [];
+          setResults(rows);
+          setQueryInfo(`${rows.length} row(s) returned`);
+          showNotification(`Query executed successfully (${rows.length} rows)`, "success");
+        } 
+        // Handle INSERT/UPDATE/DELETE queries (no data, just affected rows)
+        else if (['INSERT', 'UPDATE', 'DELETE'].includes(queryType)) {
+          const affectedRows = response.affectedRows || 0;
+          setResults([]); // Empty array for non-SELECT queries
+          setQueryInfo(`${affectedRows} row(s) affected`);
+          showNotification(`${queryType} executed successfully. ${affectedRows} row(s) affected.`, "success");
+        }
+        // Handle other queries (CREATE, ALTER, DROP, etc.)
+        else {
+          setResults([]);
+          setQueryInfo(response.message || 'Query executed successfully');
+          showNotification(response.message || 'Query executed successfully', "success");
+        }
       }
-
-      setResults(rows);
       
       // Update history
       setHistory(prev => {
@@ -67,17 +87,8 @@ export const SqlConsole: React.FC = () => {
         return newHistory.slice(0, 5);
       });
 
-      // Better notification feedback
-      const affectedRows = (response as any).affectedRows;
-      if (affectedRows !== undefined) {
-         showNotification(`Query executed. Affected Rows: ${affectedRows}`, "success");
-      } else {
-         showNotification(`Query executed successfully (${rows.length} rows)`, "success");
-      }
-
     } catch (err: any) {
       console.error(err);
-      // The error message now comes from api.ts parsing the backend response
       setError(err.message || "An error occurred while executing the query");
       showNotification("Query execution failed", "error");
     } finally {
@@ -90,6 +101,7 @@ export const SqlConsole: React.FC = () => {
     setResults(null);
     setError(null);
     setExecutionTime(0);
+    setQueryInfo('');
   };
 
   return (
@@ -152,7 +164,7 @@ export const SqlConsole: React.FC = () => {
             </div>
 
             {/* Results / Error Area */}
-            {(results || error) && (
+            {(results !== null || error) && (
               <div className="animate-in fade-in zoom-in duration-300">
                 {error ? (
                   <div className="bg-[#FFF1F2] border border-[#FECDD3] rounded-3xl p-6 text-[#E11D48] flex items-start gap-4 shadow-sm">
@@ -170,7 +182,7 @@ export const SqlConsole: React.FC = () => {
                         <span className="font-semibold text-sm">Query Executed Successfully</span>
                       </div>
                       <div className="flex items-center gap-4 text-xs font-mono">
-                        <span>Rows: <strong>{results?.length}</strong></span>
+                        <span className="font-semibold">{queryInfo}</span>
                         <span className="flex items-center gap-1"><Clock size={12} /> {executionTime}ms</span>
                       </div>
                     </div>
@@ -198,8 +210,11 @@ export const SqlConsole: React.FC = () => {
                           </tbody>
                         </table>
                       ) : (
-                        <div className="p-8 text-center text-slate-400 italic">
-                          Query returned no data (0 rows).
+                        <div className="p-8 text-center">
+                          <div className="inline-flex items-center gap-2 px-4 py-2 bg-[#ECFDF5] text-[#059669] rounded-xl font-semibold text-sm">
+                            <CheckCircle size={16} />
+                            {queryInfo || 'Query executed successfully'}
+                          </div>
                         </div>
                       )}
                     </div>
