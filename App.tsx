@@ -13,6 +13,7 @@ import { Bookings } from './pages/Bookings';
 import { Payments } from './pages/Payments';
 import { Employees } from './pages/Employees';
 import { SqlConsole } from './pages/SqlConsole';
+import { ERDiagram } from './pages/ERDiagram';
 
 const ProtectedRoute = ({ children }: { children?: React.ReactNode }) => {
   const { isAuthenticated } = useAuth();
@@ -109,6 +110,7 @@ function App() {
               <Route path="/payments" element={<ProtectedRoute><Payments /></ProtectedRoute>} />
               <Route path="/employees" element={<ProtectedRoute><Employees /></ProtectedRoute>} />
               <Route path="/sql-console" element={<ProtectedRoute><SqlConsole /></ProtectedRoute>} />
+              <Route path="/er-diagram" element={<ProtectedRoute><ERDiagram /></ProtectedRoute>} />
               
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
