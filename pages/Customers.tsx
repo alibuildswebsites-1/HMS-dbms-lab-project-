@@ -139,7 +139,7 @@ export const Customers: React.FC = () => {
         <div className="flex gap-2">
             <button
             onClick={() => setShowFilters(!showFilters)}
-            className={`px-4 py-2.5 rounded-xl border flex items-center transition-all duration-200 ${showFilters ? 'bg-[#2C4A3B] text-white border-[#2C4A3B]' : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'}`}
+            className={`px-4 py-2.5 rounded-xl border flex items-center transition-all duration-200 ${showFilters ? 'bg-[#8B5CF6] text-white border-[#8B5CF6]' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'}`}
             >
             <Filter size={18} className="mr-2" />
             Filters
@@ -156,7 +156,7 @@ export const Customers: React.FC = () => {
         </div>
         <button
           onClick={() => openModal()}
-          className="bg-[#4A7C59] text-white px-5 py-2.5 rounded-xl hover:bg-[#3B6347] transition-all shadow-lg shadow-[#4A7C59]/30 flex items-center font-semibold"
+          className="bg-[#8B5CF6] text-white px-5 py-2.5 rounded-xl hover:bg-[#7C3AED] transition-all shadow-lg shadow-violet-200 flex items-center font-semibold"
         >
           <Plus size={20} className="mr-2" />
           Add Customer
@@ -165,24 +165,24 @@ export const Customers: React.FC = () => {
 
       {/* Advanced Filters */}
       {showFilters && (
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-6 animate-in fade-in slide-in-from-top-2">
+        <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 mb-6 animate-in fade-in slide-in-from-top-2">
            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <div>
-                    <label className="block text-sm font-semibold text-[#2C4A3B] mb-2">Search</label>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">Search</label>
                     <input 
                         type="text"
                         placeholder="Name, Email, or Phone"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#4A7C59]/20 focus:border-[#4A7C59] outline-none transition-all"
+                        className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-[#8B5CF6]/20 focus:border-[#8B5CF6] outline-none transition-all"
                     />
                 </div>
                 <div>
-                    <label className="block text-sm font-semibold text-[#2C4A3B] mb-2">Nationality</label>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">Nationality</label>
                     <select
                         value={nationalityFilter}
                         onChange={(e) => setNationalityFilter(e.target.value)}
-                        className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#4A7C59]/20 focus:border-[#4A7C59] outline-none transition-all"
+                        className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-[#8B5CF6]/20 focus:border-[#8B5CF6] outline-none transition-all"
                     >
                         <option value="">All Nationalities</option>
                         {uniqueNationalities.map(nat => (
@@ -260,8 +260,8 @@ export const Customers: React.FC = () => {
             onChange={(e) => setFormData({ ...formData, address: e.target.value })}
           />
           <div className="flex justify-end gap-3 mt-8">
-            <button onClick={() => setIsModalOpen(false)} className="px-5 py-2.5 border border-gray-200 rounded-xl hover:bg-gray-50 text-gray-700 font-medium">Cancel</button>
-            <button onClick={handleSubmit} className="px-5 py-2.5 bg-[#4A7C59] text-white rounded-xl hover:bg-[#3B6347] font-medium shadow-md">
+            <button onClick={() => setIsModalOpen(false)} className="px-5 py-2.5 border border-slate-200 rounded-xl hover:bg-slate-50 text-slate-700 font-medium">Cancel</button>
+            <button onClick={handleSubmit} className="px-5 py-2.5 bg-[#8B5CF6] text-white rounded-xl hover:bg-[#7C3AED] font-medium shadow-md">
               {editingCustomer ? 'Update Customer' : 'Save Customer'}
             </button>
           </div>
@@ -273,22 +273,22 @@ export const Customers: React.FC = () => {
         {viewingCustomer && (
           <div className="space-y-6">
             <div className="flex items-center gap-4 mb-2">
-                <div className="w-16 h-16 rounded-full bg-[#E6F4EA] flex items-center justify-center text-[#4A7C59] text-xl font-bold border border-[#4A7C59]/20">
+                <div className="w-16 h-16 rounded-full bg-[#F5F3FF] flex items-center justify-center text-[#8B5CF6] text-xl font-bold border border-violet-100">
                     {viewingCustomer.customer_name.charAt(0)}
                 </div>
                 <div>
-                    <h3 className="text-xl font-bold text-[#2C4A3B]">{viewingCustomer.customer_name}</h3>
-                    <p className="text-gray-500">{viewingCustomer.email}</p>
+                    <h3 className="text-xl font-bold text-slate-700">{viewingCustomer.customer_name}</h3>
+                    <p className="text-slate-500">{viewingCustomer.email}</p>
                 </div>
             </div>
-            <div className="grid grid-cols-2 gap-x-6 gap-y-6 border-t border-gray-100 pt-6">
-               <div><p className="text-xs font-bold text-gray-400 uppercase tracking-wide">Phone</p><p className="font-medium text-gray-800 mt-1">{viewingCustomer.phone}</p></div>
-               <div><p className="text-xs font-bold text-gray-400 uppercase tracking-wide">CNIC</p><p className="font-medium text-gray-800 mt-1">{viewingCustomer.id}</p></div>
-               <div><p className="text-xs font-bold text-gray-400 uppercase tracking-wide">Nationality</p><p className="font-medium text-gray-800 mt-1">{viewingCustomer.nationality}</p></div>
-               <div className="col-span-2"><p className="text-xs font-bold text-gray-400 uppercase tracking-wide">Address</p><p className="font-medium text-gray-800 mt-1">{viewingCustomer.address}</p></div>
+            <div className="grid grid-cols-2 gap-x-6 gap-y-6 border-t border-slate-100 pt-6">
+               <div><p className="text-xs font-bold text-slate-400 uppercase tracking-wide">Phone</p><p className="font-medium text-slate-800 mt-1">{viewingCustomer.phone}</p></div>
+               <div><p className="text-xs font-bold text-slate-400 uppercase tracking-wide">CNIC</p><p className="font-medium text-slate-800 mt-1">{viewingCustomer.id}</p></div>
+               <div><p className="text-xs font-bold text-slate-400 uppercase tracking-wide">Nationality</p><p className="font-medium text-slate-800 mt-1">{viewingCustomer.nationality}</p></div>
+               <div className="col-span-2"><p className="text-xs font-bold text-slate-400 uppercase tracking-wide">Address</p><p className="font-medium text-slate-800 mt-1">{viewingCustomer.address}</p></div>
             </div>
             <div className="mt-8 flex justify-end">
-              <button onClick={() => setViewingCustomer(null)} className="px-6 py-2.5 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 font-medium">Close</button>
+              <button onClick={() => setViewingCustomer(null)} className="px-6 py-2.5 bg-slate-100 text-slate-700 rounded-xl hover:bg-slate-200 font-medium">Close</button>
             </div>
           </div>
         )}

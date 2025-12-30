@@ -125,7 +125,7 @@ export const Rooms: React.FC = () => {
          <div className="flex gap-2">
             <button
             onClick={() => setShowFilters(!showFilters)}
-            className={`px-4 py-2.5 rounded-xl border flex items-center transition-all duration-200 ${showFilters ? 'bg-[#2C4A3B] text-white border-[#2C4A3B]' : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'}`}
+            className={`px-4 py-2.5 rounded-xl border flex items-center transition-all duration-200 ${showFilters ? 'bg-[#8B5CF6] text-white border-[#8B5CF6]' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'}`}
             >
             <Filter size={18} className="mr-2" />
             Filters
@@ -142,7 +142,7 @@ export const Rooms: React.FC = () => {
         </div>
         <button
           onClick={() => openModal()}
-          className="bg-[#4A7C59] text-white px-5 py-2.5 rounded-xl hover:bg-[#3B6347] transition-all shadow-lg shadow-[#4A7C59]/30 flex items-center font-semibold"
+          className="bg-[#8B5CF6] text-white px-5 py-2.5 rounded-xl hover:bg-[#7C3AED] transition-all shadow-lg shadow-violet-200 flex items-center font-semibold"
         >
           <Plus size={20} className="mr-2" />
           Add Room
@@ -151,48 +151,48 @@ export const Rooms: React.FC = () => {
 
        {/* Advanced Filters */}
        {showFilters && (
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-6 animate-in fade-in slide-in-from-top-2">
+        <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 mb-6 animate-in fade-in slide-in-from-top-2">
            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <div>
-                    <label className="block text-sm font-semibold text-[#2C4A3B] mb-2">Room Type</label>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">Room Type</label>
                     <select
                         value={typeFilter}
                         onChange={(e) => setTypeFilter(e.target.value)}
-                        className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#4A7C59]/20 focus:border-[#4A7C59] outline-none transition-all"
+                        className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-[#8B5CF6]/20 focus:border-[#8B5CF6] outline-none transition-all"
                     >
                         <option value="">All Types</option>
                         {Object.values(RoomType).map(t => <option key={t} value={t}>{t}</option>)}
                     </select>
                 </div>
                 <div>
-                    <label className="block text-sm font-semibold text-[#2C4A3B] mb-2">Status</label>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">Status</label>
                     <select
                         value={statusFilter}
                         onChange={(e) => setStatusFilter(e.target.value)}
-                        className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#4A7C59]/20 focus:border-[#4A7C59] outline-none transition-all"
+                        className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-[#8B5CF6]/20 focus:border-[#8B5CF6] outline-none transition-all"
                     >
                         <option value="">All Statuses</option>
                         {Object.values(RoomStatus).map(s => <option key={s} value={s}>{s}</option>)}
                     </select>
                 </div>
                 <div>
-                     <label className="block text-sm font-semibold text-[#2C4A3B] mb-2">Min Price</label>
+                     <label className="block text-sm font-semibold text-slate-700 mb-2">Min Price</label>
                      <input 
                         type="number"
                         placeholder="0"
                         value={minPrice}
                         onChange={(e) => setMinPrice(e.target.value ? parseInt(e.target.value) : '')}
-                        className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#4A7C59]/20 focus:border-[#4A7C59] outline-none transition-all"
+                        className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-[#8B5CF6]/20 focus:border-[#8B5CF6] outline-none transition-all"
                      />
                 </div>
                 <div>
-                     <label className="block text-sm font-semibold text-[#2C4A3B] mb-2">Max Price</label>
+                     <label className="block text-sm font-semibold text-slate-700 mb-2">Max Price</label>
                      <input 
                         type="number"
                         placeholder="Max"
                         value={maxPrice}
                         onChange={(e) => setMaxPrice(e.target.value ? parseInt(e.target.value) : '')}
-                        className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#4A7C59]/20 focus:border-[#4A7C59] outline-none transition-all"
+                        className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-[#8B5CF6]/20 focus:border-[#8B5CF6] outline-none transition-all"
                      />
                 </div>
            </div>
@@ -203,7 +203,7 @@ export const Rooms: React.FC = () => {
         data={filteredRooms}
         isLoading={isLoading}
         columns={[
-          { header: 'Room #', accessor: 'room_number', className: 'w-24 font-bold text-[#2C4A3B]' },
+          { header: 'Room #', accessor: 'room_number', className: 'w-24 font-bold text-[#8B5CF6]' },
           { header: 'Type', accessor: 'room_type' },
           { header: 'Floor', accessor: 'floor_number' },
           { header: 'Price (PKR)', accessor: (row) => row.price_per_night.toLocaleString() },
@@ -211,10 +211,10 @@ export const Rooms: React.FC = () => {
             header: 'Status', 
             accessor: (row) => (
               <span className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wide ${
-                row.room_status === RoomStatus.AVAILABLE ? 'bg-[#E6F4EA] text-[#4A7C59]' :
-                row.room_status === RoomStatus.OCCUPIED ? 'bg-[#FCE8E6] text-[#E07A5F]' :
-                row.room_status === RoomStatus.RESERVED ? 'bg-[#FFF8E1] text-[#7A4F01]' :
-                'bg-gray-100 text-gray-600'
+                row.room_status === RoomStatus.AVAILABLE ? 'bg-[#ECFDF5] text-[#059669]' :
+                row.room_status === RoomStatus.OCCUPIED ? 'bg-[#FFF1F2] text-[#E11D48]' :
+                row.room_status === RoomStatus.RESERVED ? 'bg-[#FFFBEB] text-[#D97706]' :
+                'bg-slate-100 text-slate-600'
               }`}>
                 {row.room_status}
               </span>
@@ -269,8 +269,8 @@ export const Rooms: React.FC = () => {
           </FormSelect>
 
           <div className="flex justify-end gap-3 mt-8">
-            <button onClick={() => setIsModalOpen(false)} className="px-5 py-2.5 border border-gray-200 rounded-xl hover:bg-gray-50 text-gray-700 font-medium">Cancel</button>
-            <button onClick={handleSubmit} className="px-5 py-2.5 bg-[#4A7C59] text-white rounded-xl hover:bg-[#3B6347] font-medium shadow-md">
+            <button onClick={() => setIsModalOpen(false)} className="px-5 py-2.5 border border-slate-200 rounded-xl hover:bg-slate-50 text-slate-700 font-medium">Cancel</button>
+            <button onClick={handleSubmit} className="px-5 py-2.5 bg-[#8B5CF6] text-white rounded-xl hover:bg-[#7C3AED] font-medium shadow-md">
               {editingRoom ? 'Update Room' : 'Save Room'}
             </button>
           </div>

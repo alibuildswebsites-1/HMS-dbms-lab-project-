@@ -43,18 +43,18 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({ childr
         {notifications.map((n) => (
           <div
             key={n.id}
-            className={`flex items-center w-80 p-4 rounded-xl shadow-xl transform transition-all duration-300 border ${
-              n.type === 'success' ? 'bg-[#E6F4EA] border-[#4A7C59] text-[#1E4620]' :
-              n.type === 'error' ? 'bg-[#FCE8E6] border-[#E07A5F] text-[#8C1D18]' :
-              n.type === 'warning' ? 'bg-[#FFF8E1] border-[#F4D35E] text-[#7A4F01]' :
-              'bg-[#E0FBFC] border-[#3D5A80] text-[#1D3557]'
+            className={`flex items-center w-80 p-4 rounded-2xl shadow-lg shadow-gray-100 transform transition-all duration-300 border ${
+              n.type === 'success' ? 'bg-[#ECFDF5] border-[#A7F3D0] text-[#059669]' :
+              n.type === 'error' ? 'bg-[#FFF1F2] border-[#FECDD3] text-[#E11D48]' :
+              n.type === 'warning' ? 'bg-[#FFFBEB] border-[#FDE68A] text-[#D97706]' :
+              'bg-[#EFF6FF] border-[#BFDBFE] text-[#2563EB]'
             }`}
           >
             <div className="mr-3">
-              {n.type === 'success' && <CheckCircle size={22} className="text-[#4A7C59]" />}
-              {n.type === 'error' && <AlertCircle size={22} className="text-[#E07A5F]" />}
-              {n.type === 'warning' && <AlertTriangle size={22} className="text-[#F4D35E]" />}
-              {n.type === 'info' && <Info size={22} className="text-[#3D5A80]" />}
+              {n.type === 'success' && <CheckCircle size={22} className="text-[#34D399]" />}
+              {n.type === 'error' && <AlertCircle size={22} className="text-[#FB7185]" />}
+              {n.type === 'warning' && <AlertTriangle size={22} className="text-[#FBBF24]" />}
+              {n.type === 'info' && <Info size={22} className="text-[#60A5FA]" />}
             </div>
             <div className="flex-1 text-sm font-semibold">{n.message}</div>
             <button onClick={() => removeNotification(n.id)} className="ml-2 opacity-60 hover:opacity-100 transition-opacity">

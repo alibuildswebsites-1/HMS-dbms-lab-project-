@@ -179,7 +179,7 @@ export const Bookings: React.FC = () => {
          <div className="flex gap-2">
             <button
             onClick={() => setShowFilters(!showFilters)}
-            className={`px-4 py-2.5 rounded-xl border flex items-center transition-all duration-200 ${showFilters ? 'bg-[#2C4A3B] text-white border-[#2C4A3B]' : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'}`}
+            className={`px-4 py-2.5 rounded-xl border flex items-center transition-all duration-200 ${showFilters ? 'bg-[#8B5CF6] text-white border-[#8B5CF6]' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'}`}
             >
             <Filter size={18} className="mr-2" />
             Filters
@@ -196,7 +196,7 @@ export const Bookings: React.FC = () => {
         </div>
         <button
           onClick={() => openModal()}
-          className="bg-[#4A7C59] text-white px-5 py-2.5 rounded-xl hover:bg-[#3B6347] transition-all shadow-lg shadow-[#4A7C59]/30 flex items-center font-semibold"
+          className="bg-[#8B5CF6] text-white px-5 py-2.5 rounded-xl hover:bg-[#7C3AED] transition-all shadow-lg shadow-violet-200 flex items-center font-semibold"
         >
           <Plus size={20} className="mr-2" />
           Create Booking
@@ -205,45 +205,45 @@ export const Bookings: React.FC = () => {
 
        {/* Advanced Filters */}
        {showFilters && (
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-6 animate-in fade-in slide-in-from-top-2">
+        <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 mb-6 animate-in fade-in slide-in-from-top-2">
            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <div>
-                    <label className="block text-sm font-semibold text-[#2C4A3B] mb-2">Customer Name</label>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">Customer Name</label>
                     <input 
                         type="text"
                         placeholder="Search customer..."
                         value={customerSearch}
                         onChange={(e) => setCustomerSearch(e.target.value)}
-                        className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#4A7C59]/20 focus:border-[#4A7C59] outline-none transition-all"
+                        className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-[#8B5CF6]/20 focus:border-[#8B5CF6] outline-none transition-all"
                      />
                 </div>
                 <div>
-                    <label className="block text-sm font-semibold text-[#2C4A3B] mb-2">Status</label>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">Status</label>
                     <select
                         value={statusFilter}
                         onChange={(e) => setStatusFilter(e.target.value)}
-                        className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#4A7C59]/20 focus:border-[#4A7C59] outline-none transition-all"
+                        className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-[#8B5CF6]/20 focus:border-[#8B5CF6] outline-none transition-all"
                     >
                         <option value="">All Statuses</option>
                         {Object.values(BookingStatus).map(s => <option key={s} value={s}>{s}</option>)}
                     </select>
                 </div>
                 <div>
-                     <label className="block text-sm font-semibold text-[#2C4A3B] mb-2">From Date</label>
+                     <label className="block text-sm font-semibold text-slate-700 mb-2">From Date</label>
                      <input 
                         type="date"
                         value={startDate}
                         onChange={(e) => setStartDate(e.target.value)}
-                        className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#4A7C59]/20 focus:border-[#4A7C59] outline-none transition-all"
+                        className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-[#8B5CF6]/20 focus:border-[#8B5CF6] outline-none transition-all"
                      />
                 </div>
                 <div>
-                     <label className="block text-sm font-semibold text-[#2C4A3B] mb-2">To Date</label>
+                     <label className="block text-sm font-semibold text-slate-700 mb-2">To Date</label>
                      <input 
                         type="date"
                         value={endDate}
                         onChange={(e) => setEndDate(e.target.value)}
-                        className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#4A7C59]/20 focus:border-[#4A7C59] outline-none transition-all"
+                        className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-[#8B5CF6]/20 focus:border-[#8B5CF6] outline-none transition-all"
                      />
                 </div>
            </div>
@@ -265,10 +265,10 @@ export const Bookings: React.FC = () => {
             header: 'Status',
             accessor: (row) => (
               <span className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wide ${
-                row.booking_status === BookingStatus.CONFIRMED ? 'bg-[#E6F4EA] text-[#4A7C59]' :
-                row.booking_status === BookingStatus.PENDING ? 'bg-[#FFF8E1] text-[#7A4F01]' :
-                row.booking_status === BookingStatus.CANCELLED ? 'bg-[#FCE8E6] text-[#E07A5F]' :
-                'bg-[#E0FBFC] text-[#3D5A80]'
+                row.booking_status === BookingStatus.CONFIRMED ? 'bg-[#ECFDF5] text-[#059669]' :
+                row.booking_status === BookingStatus.PENDING ? 'bg-[#FFFBEB] text-[#D97706]' :
+                row.booking_status === BookingStatus.CANCELLED ? 'bg-[#FFF1F2] text-[#E11D48]' :
+                'bg-[#EFF6FF] text-[#2563EB]'
               }`}>
                 {row.booking_status}
               </span>
@@ -281,7 +281,7 @@ export const Bookings: React.FC = () => {
             row.booking_status !== BookingStatus.CANCELLED && row.booking_status !== BookingStatus.COMPLETED ? (
                 <button 
                     onClick={() => handleCancelBooking(row)}
-                    className="text-[#E07A5F] hover:text-[#C45F44] font-semibold px-3 py-1.5 hover:bg-[#FFF5F2] rounded-lg transition-colors text-xs mr-2"
+                    className="text-[#FB7185] hover:text-[#E11D48] font-semibold px-3 py-1.5 hover:bg-[#FFF1F2] rounded-lg transition-colors text-xs mr-2"
                 >
                     Cancel
                 </button>
@@ -354,8 +354,8 @@ export const Bookings: React.FC = () => {
             </FormSelect>
 
             <div className="flex justify-end gap-3 mt-8">
-                <button onClick={() => setIsModalOpen(false)} className="px-5 py-2.5 border border-gray-200 rounded-xl hover:bg-gray-50 text-gray-700 font-medium">Cancel</button>
-                <button onClick={handleSubmit} className="px-5 py-2.5 bg-[#4A7C59] text-white rounded-xl hover:bg-[#3B6347] font-medium shadow-md">
+                <button onClick={() => setIsModalOpen(false)} className="px-5 py-2.5 border border-slate-200 rounded-xl hover:bg-slate-50 text-slate-700 font-medium">Cancel</button>
+                <button onClick={handleSubmit} className="px-5 py-2.5 bg-[#8B5CF6] text-white rounded-xl hover:bg-[#7C3AED] font-medium shadow-md">
                 {editingBooking ? 'Update Booking' : 'Create Booking'}
                 </button>
             </div>

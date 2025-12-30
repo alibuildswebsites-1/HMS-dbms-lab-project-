@@ -6,13 +6,13 @@ import { api } from '../services/api';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 const StatCard = ({ title, value, icon: Icon, colorClass, iconColorClass }: { title: string, value: string | number, icon: any, colorClass: string, iconColorClass: string }) => (
-  <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center transition-all duration-300 hover:-translate-y-2 hover:shadow-xl group cursor-default">
+  <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 flex items-center transition-all duration-300 hover:-translate-y-2 hover:shadow-xl group cursor-default">
     <div className={`p-4 rounded-2xl mr-5 ${colorClass} transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3`}>
       <Icon className={`w-7 h-7 ${iconColorClass}`} />
     </div>
     <div>
-      <p className="text-gray-400 text-xs font-bold uppercase tracking-wider mb-1 group-hover:text-[#4A7C59] transition-colors">{title}</p>
-      <h3 className="text-2xl font-bold text-[#2C4A3B]">{value}</h3>
+      <p className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-1 group-hover:text-[#8B5CF6] transition-colors">{title}</p>
+      <h3 className="text-2xl font-bold text-slate-700">{value}</h3>
     </div>
   </div>
 );
@@ -65,76 +65,76 @@ export const Dashboard: React.FC = () => {
           title="Total Customers" 
           value={stats.totalCustomers} 
           icon={Users} 
-          colorClass="bg-[#E0FBFC]" 
-          iconColorClass="text-[#3D5A80]" 
+          colorClass="bg-[#EFF6FF]" 
+          iconColorClass="text-[#60A5FA]" 
         />
         <StatCard 
           title="Total Rooms" 
           value={stats.totalRooms} 
           icon={BedDouble} 
-          colorClass="bg-[#E6F4EA]" 
-          iconColorClass="text-[#4A7C59]" 
+          colorClass="bg-[#F5F3FF]" 
+          iconColorClass="text-[#A78BFA]" 
         />
         <StatCard 
           title="Available Rooms" 
           value={stats.availableRooms} 
           icon={Key} 
-          colorClass="bg-[#FFF8E1]" 
-          iconColorClass="text-[#F4D35E]" 
+          colorClass="bg-[#FFFBEB]" 
+          iconColorClass="text-[#FBBF24]" 
         />
         <StatCard 
           title="Total Bookings" 
           value={stats.totalBookings} 
           icon={CalendarCheck} 
-          colorClass="bg-[#FCE8E6]" 
-          iconColorClass="text-[#E07A5F]" 
+          colorClass="bg-[#FFF1F2]" 
+          iconColorClass="text-[#FB7185]" 
         />
         <StatCard 
           title="Employees" 
           value={stats.totalEmployees} 
           icon={Briefcase} 
-          colorClass="bg-[#F0E6EF]" 
-          iconColorClass="text-[#9D8189]" 
+          colorClass="bg-[#FDF2F8]" 
+          iconColorClass="text-[#F472B6]" 
         />
         <StatCard 
           title="Total Revenue" 
           value={`PKR ${Number(stats.totalRevenue).toLocaleString()}`} 
           icon={DollarSign} 
-          colorClass="bg-[#2C4A3B]/10" 
-          iconColorClass="text-[#2C4A3B]" 
+          colorClass="bg-[#ECFDF5]" 
+          iconColorClass="text-[#34D399]" 
         />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 bg-white p-6 rounded-2xl shadow-sm border border-gray-100 h-96 flex flex-col transition-all duration-300 hover:shadow-lg">
-          <h3 className="text-lg font-bold text-[#2C4A3B] mb-6">Weekly Revenue Analytics</h3>
+        <div className="lg:col-span-2 bg-white p-6 rounded-3xl shadow-sm border border-slate-100 h-96 flex flex-col transition-all duration-300 hover:shadow-lg">
+          <h3 className="text-lg font-bold text-slate-700 mb-6">Weekly Revenue Analytics</h3>
           <div className="flex-1 w-full min-h-0">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={chartData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" vertical={false} />
-                <XAxis dataKey="name" tick={{fill: '#6b7280'}} axisLine={false} tickLine={false} dy={10} />
-                <YAxis tick={{fill: '#6b7280'}} axisLine={false} tickLine={false} dx={-10} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
+                <XAxis dataKey="name" tick={{fill: '#94a3b8'}} axisLine={false} tickLine={false} dy={10} />
+                <YAxis tick={{fill: '#94a3b8'}} axisLine={false} tickLine={false} dx={-10} />
                 <Tooltip 
-                    cursor={{fill: '#f9fafb'}} 
-                    contentStyle={{borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'}}
+                    cursor={{fill: '#f8fafc'}} 
+                    contentStyle={{borderRadius: '16px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)', backgroundColor: '#fff'}}
                 />
-                <Bar dataKey="revenue" fill="#4A7C59" radius={[6, 6, 0, 0]} barSize={40} />
+                <Bar dataKey="revenue" fill="#A78BFA" radius={[8, 8, 0, 0]} barSize={40} />
               </BarChart>
             </ResponsiveContainer>
           </div>
         </div>
         
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 h-96 flex flex-col justify-center items-center text-center transition-all duration-300 hover:shadow-lg">
-            <h3 className="text-lg font-bold text-[#2C4A3B] mb-2">System Health</h3>
-            <p className="text-gray-400 text-sm mb-8">Real-time operational status</p>
+        <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 h-96 flex flex-col justify-center items-center text-center transition-all duration-300 hover:shadow-lg">
+            <h3 className="text-lg font-bold text-slate-700 mb-2">System Health</h3>
+            <p className="text-slate-400 text-sm mb-8">Real-time operational status</p>
             <div className="flex flex-col gap-4 w-full px-8">
-                 <div className="p-5 bg-[#E6F4EA] rounded-2xl flex items-center justify-between group hover:scale-105 transition-transform duration-300 cursor-default">
-                    <span className="text-sm font-bold text-[#4A7C59] uppercase tracking-wide">Uptime</span>
-                    <span className="text-2xl font-bold text-[#1E4620]">99.9%</span>
+                 <div className="p-5 bg-[#ECFDF5] rounded-2xl flex items-center justify-between group hover:scale-105 transition-transform duration-300 cursor-default border border-emerald-100">
+                    <span className="text-sm font-bold text-[#34D399] uppercase tracking-wide">Uptime</span>
+                    <span className="text-2xl font-bold text-[#059669]">99.9%</span>
                  </div>
-                 <div className="p-5 bg-[#FFF8E1] rounded-2xl flex items-center justify-between group hover:scale-105 transition-transform duration-300 cursor-default">
-                    <span className="text-sm font-bold text-[#7A4F01] uppercase tracking-wide">Latency</span>
-                    <span className="text-2xl font-bold text-[#7A4F01]">24ms</span>
+                 <div className="p-5 bg-[#FFFBEB] rounded-2xl flex items-center justify-between group hover:scale-105 transition-transform duration-300 cursor-default border border-amber-100">
+                    <span className="text-sm font-bold text-[#FBBF24] uppercase tracking-wide">Latency</span>
+                    <span className="text-2xl font-bold text-[#D97706]">24ms</span>
                  </div>
             </div>
         </div>

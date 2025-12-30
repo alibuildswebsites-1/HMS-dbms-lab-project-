@@ -19,33 +19,33 @@ import { Info } from 'lucide-react';
 // --- Custom Node Component ---
 const TableNode = ({ data }: NodeProps) => {
   return (
-    <div className="bg-white rounded-lg shadow-xl border-2 border-gray-100 w-64 overflow-hidden font-mono text-sm group hover:border-[#4A7C59] transition-colors duration-300">
-      <Handle type="target" position={Position.Top} className="!bg-[#4A7C59] !w-3 !h-3" />
+    <div className="bg-white rounded-xl shadow-xl border-2 border-slate-100 w-64 overflow-hidden font-mono text-sm group hover:border-[#8B5CF6] transition-colors duration-300">
+      <Handle type="target" position={Position.Top} className="!bg-[#8B5CF6] !w-3 !h-3" />
       
       {/* Header */}
-      <div className="bg-[#01411C] p-3 border-b border-[#01411C]">
+      <div className="bg-[#8B5CF6] p-3 border-b border-[#7C3AED]">
         <h3 className="font-bold text-white text-center tracking-wide">{data.label}</h3>
       </div>
       
       {/* Body */}
-      <div className="p-0 divide-y divide-gray-100">
+      <div className="p-0 divide-y divide-slate-100">
         {data.columns.map((col: any, idx: number) => (
-          <div key={idx} className="flex justify-between items-center px-3 py-2 hover:bg-gray-50">
+          <div key={idx} className="flex justify-between items-center px-3 py-2 hover:bg-slate-50">
             <div className="flex items-center gap-2 overflow-hidden">
               <span className="text-xs w-4 flex-shrink-0">
                 {col.isPk && '🔑'}
                 {col.isFk && '🔗'}
               </span>
-              <span className={`truncate ${col.isPk ? 'font-bold text-gray-900' : col.isFk ? 'italic text-[#4A7C59]' : 'text-gray-700'}`}>
+              <span className={`truncate ${col.isPk ? 'font-bold text-slate-900' : col.isFk ? 'italic text-[#8B5CF6]' : 'text-slate-700'}`}>
                 {col.name}
               </span>
             </div>
-            <span className="text-[10px] text-gray-400 uppercase ml-2 flex-shrink-0">{col.type}</span>
+            <span className="text-[10px] text-slate-400 uppercase ml-2 flex-shrink-0">{col.type}</span>
           </div>
         ))}
       </div>
       
-      <Handle type="source" position={Position.Bottom} className="!bg-[#4A7C59] !w-3 !h-3" />
+      <Handle type="source" position={Position.Bottom} className="!bg-[#8B5CF6] !w-3 !h-3" />
     </div>
   );
 };
@@ -169,8 +169,8 @@ const initialEdges: Edge[] = [
     target: 'booking', 
     label: '1 : M', 
     animated: true, 
-    style: { stroke: '#4A7C59', strokeWidth: 2 },
-    labelStyle: { fill: '#4A7C59', fontWeight: 700 }
+    style: { stroke: '#8B5CF6', strokeWidth: 2 },
+    labelStyle: { fill: '#8B5CF6', fontWeight: 700 }
   },
   { 
     id: 'e-room-book', 
@@ -178,8 +178,8 @@ const initialEdges: Edge[] = [
     target: 'booking', 
     label: '1 : M', 
     animated: true,
-    style: { stroke: '#4A7C59', strokeWidth: 2 },
-    labelStyle: { fill: '#4A7C59', fontWeight: 700 }
+    style: { stroke: '#8B5CF6', strokeWidth: 2 },
+    labelStyle: { fill: '#8B5CF6', fontWeight: 700 }
   },
   { 
     id: 'e-dept-emp', 
@@ -187,8 +187,8 @@ const initialEdges: Edge[] = [
     target: 'employee', 
     label: '1 : M', 
     animated: true,
-    style: { stroke: '#4A7C59', strokeWidth: 2 },
-    labelStyle: { fill: '#4A7C59', fontWeight: 700 }
+    style: { stroke: '#8B5CF6', strokeWidth: 2 },
+    labelStyle: { fill: '#8B5CF6', fontWeight: 700 }
   },
   { 
     id: 'e-book-pay', 
@@ -196,8 +196,8 @@ const initialEdges: Edge[] = [
     target: 'payment', 
     label: '1 : 1', 
     animated: true,
-    style: { stroke: '#4A7C59', strokeWidth: 2 },
-    labelStyle: { fill: '#4A7C59', fontWeight: 700 }
+    style: { stroke: '#8B5CF6', strokeWidth: 2 },
+    labelStyle: { fill: '#8B5CF6', fontWeight: 700 }
   },
 ];
 
@@ -210,18 +210,18 @@ export const ERDiagram: React.FC = () => {
       <div className="space-y-6 h-[calc(100vh-8rem)] flex flex-col">
         
         {/* Info Banner */}
-        <div className="bg-[#E6F4EA] border border-[#4A7C59]/20 p-4 rounded-xl flex items-center gap-3 text-[#2C4A3B] animate-in fade-in slide-in-from-top-4">
-          <Info size={24} className="flex-shrink-0 text-[#4A7C59]" />
+        <div className="bg-[#F5F3FF] border border-violet-100 p-4 rounded-xl flex items-center gap-3 text-[#6D28D9] animate-in fade-in slide-in-from-top-4">
+          <Info size={24} className="flex-shrink-0 text-[#8B5CF6]" />
           <div>
             <h3 className="font-bold text-sm">Interactive Schema Visualization</h3>
-            <p className="text-xs text-[#4A7C59] mt-0.5">
+            <p className="text-xs text-[#8B5CF6] mt-0.5">
               Drag nodes to rearrange. Use scroll to zoom. This diagram represents the live database structure and relationships.
             </p>
           </div>
         </div>
 
         {/* Diagram Canvas */}
-        <div className="flex-1 bg-gray-50 rounded-2xl border border-gray-200 shadow-inner overflow-hidden relative">
+        <div className="flex-1 bg-slate-50 rounded-2xl border border-slate-200 shadow-inner overflow-hidden relative">
           <ReactFlow
             nodes={nodes}
             edges={edges}
@@ -232,12 +232,12 @@ export const ERDiagram: React.FC = () => {
             fitViewOptions={{ padding: 0.2 }}
             attributionPosition="bottom-left"
           >
-            <Controls className="!bg-white !shadow-lg !border-gray-100 !rounded-lg overflow-hidden [&>button]:!border-gray-100 [&>button:hover]:!bg-gray-50" />
+            <Controls className="!bg-white !shadow-lg !border-slate-100 !rounded-lg overflow-hidden [&>button]:!border-slate-100 [&>button:hover]:!bg-slate-50" />
             <MiniMap 
-              nodeStrokeColor="#01411C"
-              nodeColor="#E6F4EA"
+              nodeStrokeColor="#6D28D9"
+              nodeColor="#F5F3FF"
               maskColor="rgba(240, 240, 240, 0.7)"
-              className="!bg-white !border !border-gray-200 !rounded-lg !shadow-md"
+              className="!bg-white !border !border-slate-200 !rounded-lg !shadow-md"
             />
             <Background variant={BackgroundVariant.Dots} gap={24} size={1} color="#cbd5e1" />
           </ReactFlow>
