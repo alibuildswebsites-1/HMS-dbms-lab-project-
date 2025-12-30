@@ -20,7 +20,7 @@ export const Rooms: React.FC = () => {
   const fetchRooms = async () => {
     setIsLoading(true);
     try {
-      const data = await api.get<Room[]>('http://localhost:5000/api/rooms');
+      const data = await api.get<Room[]>('http://192.168.100.14:5000/api/rooms');
       setRooms(data);
     } catch (error) {
       showNotification('Failed to fetch rooms', 'error');
@@ -57,10 +57,10 @@ export const Rooms: React.FC = () => {
 
     try {
       if (editingRoom && editingRoom.room_id) {
-        await api.put(`http://localhost:5000/api/rooms/${editingRoom.room_id}`, payload);
+        await api.put(`http://192.168.100.14:5000/api/rooms/${editingRoom.room_id}`, payload);
         showNotification('Room updated', 'success');
       } else {
-        await api.post('http://localhost:5000/api/rooms', payload);
+        await api.post('http://192.168.100.14:5000/api/rooms', payload);
         showNotification('Room created', 'success');
       }
       setIsModalOpen(false);
@@ -73,7 +73,7 @@ export const Rooms: React.FC = () => {
   const handleDelete = async () => {
     if (!deletingRoom?.room_id) return;
     try {
-      await api.delete(`http://localhost:5000/api/rooms/${deletingRoom.room_id}`);
+      await api.delete(`http://192.168.100.14:5000/api/rooms/${deletingRoom.room_id}`);
       showNotification('Room deleted', 'success');
       setDeletingRoom(null);
       fetchRooms();
@@ -92,7 +92,7 @@ export const Rooms: React.FC = () => {
            Price_Per_Night: room.price_per_night,
            Room_Status: status
         };
-        await api.put(`http://localhost:5000/api/rooms/${room.room_id}`, payload);
+        await api.put(`http://192.168.100.14:5000/api/rooms/${room.room_id}`, payload);
         showNotification(`Status updated to ${status}`, 'success');
         fetchRooms();
       }

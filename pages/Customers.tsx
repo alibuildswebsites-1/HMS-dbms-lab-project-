@@ -22,7 +22,7 @@ export const Customers: React.FC = () => {
   const fetchCustomers = async () => {
     setIsLoading(true);
     try {
-      const data = await api.get<Customer[]>('http://localhost:5000/api/customers');
+      const data = await api.get<Customer[]>('http://192.168.100.14:5000/api/customers');
       setCustomers(data);
     } catch (error) {
       showNotification('Failed to fetch customers', 'error');
@@ -64,10 +64,10 @@ export const Customers: React.FC = () => {
 
     try {
       if (editingCustomer && editingCustomer.customer_id) {
-        await api.put(`http://localhost:5000/api/customers/${editingCustomer.customer_id}`, payload);
+        await api.put(`http://192.168.100.14:5000/api/customers/${editingCustomer.customer_id}`, payload);
         showNotification('Customer updated successfully', 'success');
       } else {
-        await api.post('http://localhost:5000/api/customers', payload);
+        await api.post('http://192.168.100.14:5000/api/customers', payload);
         showNotification('Customer added successfully', 'success');
       }
       setIsModalOpen(false);
@@ -80,7 +80,7 @@ export const Customers: React.FC = () => {
   const handleDelete = async () => {
     if (!deletingCustomer?.customer_id) return;
     try {
-      await api.delete(`http://localhost:5000/api/customers/${deletingCustomer.customer_id}`);
+      await api.delete(`http://192.168.100.14:5000/api/customers/${deletingCustomer.customer_id}`);
       showNotification('Customer deleted successfully', 'success');
       setDeletingCustomer(null);
       fetchCustomers();

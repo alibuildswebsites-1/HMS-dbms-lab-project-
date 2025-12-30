@@ -15,7 +15,7 @@ export const Employees: React.FC = () => {
       const fetchEmployees = async () => {
           setIsLoading(true);
           try {
-              const data = await api.get<Employee[]>('http://localhost:5000/api/employees');
+              const data = await api.get<Employee[]>('http://192.168.100.14:5000/api/employees');
               setEmployees(data);
           } catch (e) {
               showNotification('Failed to fetch employees', 'error');

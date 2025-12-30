@@ -20,8 +20,8 @@ export const Payments: React.FC = () => {
     setIsLoading(true);
     try {
         const [payData, bookData] = await Promise.all([
-            api.get<Payment[]>('http://localhost:5000/api/payments'),
-            api.get<Booking[]>('http://localhost:5000/api/bookings')
+            api.get<Payment[]>('http://192.168.100.14:5000/api/payments'),
+            api.get<Booking[]>('http://192.168.100.14:5000/api/bookings')
         ]);
         setPayments(payData);
         setBookings(bookData);
@@ -47,10 +47,10 @@ export const Payments: React.FC = () => {
 
      try {
         if(editingPayment && editingPayment.payment_id) {
-            await api.put(`http://localhost:5000/api/payments/${editingPayment.payment_id}`, payload);
+            await api.put(`http://192.168.100.14:5000/api/payments/${editingPayment.payment_id}`, payload);
             showNotification('Payment updated', 'success');
         } else {
-            await api.post('http://localhost:5000/api/payments', payload);
+            await api.post('http://192.168.100.14:5000/api/payments', payload);
             showNotification('Payment recorded', 'success');
         }
         setIsModalOpen(false);
@@ -63,7 +63,7 @@ export const Payments: React.FC = () => {
   const handleDelete = async () => {
       if(!deletingPayment?.payment_id) return;
       try {
-          await api.delete(`http://localhost:5000/api/payments/${deletingPayment.payment_id}`);
+          await api.delete(`http://192.168.100.14:5000/api/payments/${deletingPayment.payment_id}`);
           showNotification('Payment deleted', 'success');
           setDeletingPayment(null);
           fetchData();
