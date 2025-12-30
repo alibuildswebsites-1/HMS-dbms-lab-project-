@@ -44,9 +44,9 @@ export const Bookings: React.FC = () => {
     setIsLoading(true);
     try {
       const [bookingsData, customersData, roomsData] = await Promise.all([
-        api.get<Booking[]>('http://192.168.100.14:5000/api/bookings'),
-        api.get<Customer[]>('http://192.168.100.14:5000/api/customers'),
-        api.get<Room[]>('http://192.168.100.14:5000/api/rooms')
+        api.get<Booking[]>('http://127.0.0.1:5000/api/bookings'),
+        api.get<Customer[]>('http://127.0.0.1:5000/api/customers'),
+        api.get<Room[]>('http://127.0.0.1:5000/api/rooms')
       ]);
       // Sort bookings by booking_id ascending
       setBookings(bookingsData.sort((a, b) => (a.booking_id || 0) - (b.booking_id || 0)));
@@ -81,10 +81,10 @@ export const Bookings: React.FC = () => {
 
     try {
       if (editingBooking && editingBooking.booking_id) {
-        await api.put(`http://192.168.100.14:5000/api/bookings/${editingBooking.booking_id}`, payload);
+        await api.put(`http://127.0.0.1:5000/api/bookings/${editingBooking.booking_id}`, payload);
         showNotification('Booking updated', 'success');
       } else {
-        await api.post('http://192.168.100.14:5000/api/bookings', payload);
+        await api.post('http://127.0.0.1:5000/api/bookings', payload);
         showNotification('Booking created', 'success');
       }
       setIsModalOpen(false);
@@ -97,7 +97,7 @@ export const Bookings: React.FC = () => {
   const handleDelete = async () => {
     if (!deletingBooking?.booking_id) return;
     try {
-      await api.delete(`http://192.168.100.14:5000/api/bookings/${deletingBooking.booking_id}`);
+      await api.delete(`http://127.0.0.1:5000/api/bookings/${deletingBooking.booking_id}`);
       showNotification('Booking deleted', 'success');
       setDeletingBooking(null);
       fetchData();
@@ -119,7 +119,7 @@ export const Bookings: React.FC = () => {
               Total_Amount: booking.total_amount,
               Booking_Status: BookingStatus.CANCELLED
           };
-          await api.put(`http://192.168.100.14:5000/api/bookings/${booking.booking_id}`, payload);
+          await api.put(`http://127.0.0.1:5000/api/bookings/${booking.booking_id}`, payload);
           showNotification('Booking cancelled', 'success');
           fetchData();
         }

@@ -20,7 +20,7 @@ export const Rooms: React.FC = () => {
   const fetchRooms = async () => {
     setIsLoading(true);
     try {
-      const data = await api.get<Room[]>('http://192.168.100.14:5000/api/rooms');
+      const data = await api.get<Room[]>('http://127.0.0.1:5000/api/rooms');
       // Sort by room_number using numeric sort (handles "10", "2" correctly)
       setRooms(data.sort((a, b) => a.room_number.localeCompare(b.room_number, undefined, { numeric: true })));
     } catch (error) {
@@ -58,10 +58,10 @@ export const Rooms: React.FC = () => {
 
     try {
       if (editingRoom && editingRoom.room_id) {
-        await api.put(`http://192.168.100.14:5000/api/rooms/${editingRoom.room_id}`, payload);
+        await api.put(`http://127.0.0.1:5000/api/rooms/${editingRoom.room_id}`, payload);
         showNotification('Room updated', 'success');
       } else {
-        await api.post('http://192.168.100.14:5000/api/rooms', payload);
+        await api.post('http://127.0.0.1:5000/api/rooms', payload);
         showNotification('Room created', 'success');
       }
       setIsModalOpen(false);
@@ -74,7 +74,7 @@ export const Rooms: React.FC = () => {
   const handleDelete = async () => {
     if (!deletingRoom?.room_id) return;
     try {
-      await api.delete(`http://192.168.100.14:5000/api/rooms/${deletingRoom.room_id}`);
+      await api.delete(`http://127.0.0.1:5000/api/rooms/${deletingRoom.room_id}`);
       showNotification('Room deleted', 'success');
       setDeletingRoom(null);
       fetchRooms();
