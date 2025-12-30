@@ -9,6 +9,6 @@ export default defineConfig({
     port: 5173,
   },
   optimizeDeps: {
-    exclude: ['reactflow'],
+    exclude: ['reactflow', 'react-dom/client'],
   },
 });
