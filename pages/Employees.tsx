@@ -24,13 +24,31 @@ export const Employees: React.FC = () => {
   const fetchData = async () => {
     setIsLoading(true);
     try {
-        const [empData, deptData] = await Promise.all([
-            api.get<Employee[]>('http://192.168.43.54:5000/api/employees'),
-            api.get<Department[]>('http://192.168.43.54:5000/api/departments')
+        const [empRaw, deptRaw] = await Promise.all([
+            api.get<any[]>('http://192.168.43.54:5000/api/employees'),
+            api.get<any[]>('http://192.168.43.54:5000/api/departments')
         ]);
-        // Sort employees by employee_id ascending
-        setEmployees(empData.sort((a, b) => (a.employee_id || 0) - (b.employee_id || 0)));
-        setDepartments(deptData);
+        
+        const mappedEmployees: Employee[] = empRaw.map(e => ({
+            employee_id: e.Employee_ID || e.employee_id,
+            employee_name: e.Employee_Name || e.employee_name,
+            department_id: e.Department_ID || e.department_id,
+            department_name: e.Department_Name || e.department_name,
+            email: e.Email || e.email,
+            phone: e.Phone || e.phone,
+            position: e.Position || e.position,
+            salary: e.Salary || e.salary,
+            hire_date: e.Hire_Date || e.hire_date,
+            employee_status: e.Employee_Status || e.employee_status
+        }));
+
+        const mappedDepartments: Department[] = deptRaw.map(d => ({
+            department_id: d.Department_ID || d.department_id,
+            department_name: d.Department_Name || d.department_name
+        }));
+
+        setEmployees(mappedEmployees.sort((a, b) => (a.employee_id || 0) - (b.employee_id || 0)));
+        setDepartments(mappedDepartments);
     } catch (e) {
         showNotification('Failed to fetch data', 'error');
         setEmployees([]);
@@ -86,7 +104,10 @@ export const Employees: React.FC = () => {
   };
 
   const handleDelete = async () => {
-    if (!deletingEmployee?.employee_id) return;
+    if (!deletingEmployee || !deletingEmployee.employee_id) {
+        showNotification('Error: Invalid Employee ID', 'error');
+        return;
+    }
     try {
         await api.delete(`http://192.168.43.54:5000/api/employees/${deletingEmployee.employee_id}`);
         showNotification('Employee deleted successfully', 'success');

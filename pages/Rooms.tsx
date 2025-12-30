@@ -27,8 +27,16 @@ export const Rooms: React.FC = () => {
   const fetchRooms = async () => {
     setIsLoading(true);
     try {
-      const data = await api.get<Room[]>('http://192.168.43.54:5000/api/rooms');
-      setRooms(data.sort((a, b) => a.room_number.localeCompare(b.room_number, undefined, { numeric: true })));
+      const data = await api.get<any[]>('http://192.168.43.54:5000/api/rooms');
+      const mappedData: Room[] = data.map(item => ({
+        room_id: item.Room_ID || item.room_id,
+        room_number: item.Room_Number || item.room_number,
+        room_type: item.Room_Type || item.room_type,
+        floor_number: item.Floor_Number || item.floor_number,
+        price_per_night: item.Price_Per_Night || item.price_per_night,
+        room_status: item.Room_Status || item.room_status,
+      }));
+      setRooms(mappedData.sort((a, b) => a.room_number.localeCompare(b.room_number, undefined, { numeric: true })));
     } catch (error) {
       showNotification('Failed to fetch rooms', 'error');
       setRooms([]);
@@ -94,7 +102,10 @@ export const Rooms: React.FC = () => {
   };
 
   const handleDelete = async () => {
-    if (!deletingRoom?.room_id) return;
+    if (!deletingRoom || !deletingRoom.room_id) {
+        showNotification('Error: Invalid Room ID', 'error');
+        return;
+    }
     try {
       await api.delete(`http://192.168.43.54:5000/api/rooms/${deletingRoom.room_id}`);
       showNotification('Room deleted', 'success');
@@ -206,7 +217,7 @@ export const Rooms: React.FC = () => {
           { header: 'Room #', accessor: 'room_number', className: 'w-24 font-bold text-[#8B5CF6]' },
           { header: 'Type', accessor: 'room_type' },
           { header: 'Floor', accessor: 'floor_number' },
-          { header: 'Price (PKR)', accessor: (row) => row.price_per_night.toLocaleString() },
+          { header: 'Price (PKR)', accessor: (row) => row.price_per_night?.toLocaleString() },
           { 
             header: 'Status', 
             accessor: (row) => (

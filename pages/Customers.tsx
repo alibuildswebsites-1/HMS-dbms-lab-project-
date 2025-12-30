@@ -27,8 +27,18 @@ export const Customers: React.FC = () => {
   const fetchCustomers = async () => {
     setIsLoading(true);
     try {
-      const data = await api.get<Customer[]>('http://192.168.43.54:5000/api/customers');
-      setCustomers(data.sort((a, b) => (a.customer_id || 0) - (b.customer_id || 0)));
+      const data = await api.get<any[]>('http://192.168.43.54:5000/api/customers');
+      // Map PascalCase from API to snake_case for frontend
+      const mappedData: Customer[] = data.map(item => ({
+        customer_id: item.Customer_ID || item.customer_id,
+        customer_name: item.Customer_Name || item.customer_name,
+        email: item.Email || item.email,
+        phone: item.Phone || item.phone,
+        address: item.Address || item.address,
+        nationality: item.Nationality || item.nationality,
+        id: item.ID || item.id || item.CNIC // Handle variations
+      }));
+      setCustomers(mappedData.sort((a, b) => (a.customer_id || 0) - (b.customer_id || 0)));
     } catch (error) {
       showNotification('Failed to fetch customers', 'error');
       setCustomers([]);
@@ -50,9 +60,9 @@ export const Customers: React.FC = () => {
     return customers.filter(customer => {
       const matchesSearch = 
         searchQuery === '' || 
-        customer.customer_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        customer.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        customer.phone.includes(searchQuery);
+        customer.customer_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        customer.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        customer.phone?.includes(searchQuery);
       
       const matchesNationality = 
         nationalityFilter === '' || 
@@ -107,7 +117,10 @@ export const Customers: React.FC = () => {
   };
 
   const handleDelete = async () => {
-    if (!deletingCustomer?.customer_id) return;
+    if (!deletingCustomer || !deletingCustomer.customer_id) {
+        showNotification('Error: Invalid Customer ID', 'error');
+        return;
+    }
     try {
       await api.delete(`http://192.168.43.54:5000/api/customers/${deletingCustomer.customer_id}`);
       showNotification('Customer deleted successfully', 'success');

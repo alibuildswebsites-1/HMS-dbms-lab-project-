@@ -19,13 +19,36 @@ export const Payments: React.FC = () => {
   const fetchData = async () => {
     setIsLoading(true);
     try {
-        const [payData, bookData] = await Promise.all([
-            api.get<Payment[]>('http://192.168.43.54:5000/api/payments'),
-            api.get<Booking[]>('http://192.168.43.54:5000/api/bookings')
+        const [payRaw, bookRaw] = await Promise.all([
+            api.get<any[]>('http://192.168.43.54:5000/api/payments'),
+            api.get<any[]>('http://192.168.43.54:5000/api/bookings')
         ]);
-        // Sort payments by payment_id ascending
-        setPayments(payData.sort((a, b) => (a.payment_id || 0) - (b.payment_id || 0)));
-        setBookings(bookData);
+
+        const mappedPayments: Payment[] = payRaw.map(p => ({
+            payment_id: p.Payment_ID || p.payment_id,
+            booking_id: p.Booking_ID || p.booking_id,
+            customer_name: p.Customer_Name || p.customer_name,
+            amount: p.Amount || p.amount,
+            payment_date: p.Payment_Date || p.payment_date,
+            payment_status: p.Payment_Status || p.payment_status
+        }));
+        
+        // We only need basic booking info for the dropdown
+        const mappedBookings: Booking[] = bookRaw.map(b => ({
+            booking_id: b.Booking_ID || b.booking_id,
+            customer_id: b.Customer_ID || b.customer_id,
+            room_id: b.Room_ID || b.room_id,
+            customer_name: b.Customer_Name || b.customer_name,
+            // ... other fields not critical for payment dropdown
+            booking_status: b.Booking_Status || b.booking_status,
+            check_in_date: b.Check_In_Date || b.check_in_date,
+            check_out_date: b.Check_Out_Date || b.check_out_date,
+            number_of_guests: b.Number_Of_Guests || b.number_of_guests,
+            total_amount: b.Total_Amount || b.total_amount,
+        } as Booking));
+
+        setPayments(mappedPayments.sort((a, b) => (a.payment_id || 0) - (b.payment_id || 0)));
+        setBookings(mappedBookings);
     } catch (e) {
         showNotification('Failed to fetch data', 'error');
         setPayments([]);
@@ -62,7 +85,10 @@ export const Payments: React.FC = () => {
   };
 
   const handleDelete = async () => {
-      if(!deletingPayment?.payment_id) return;
+      if(!deletingPayment || !deletingPayment.payment_id) {
+          showNotification('Error: Invalid Payment ID', 'error');
+          return;
+      }
       try {
           await api.delete(`http://192.168.43.54:5000/api/payments/${deletingPayment.payment_id}`);
           showNotification('Payment deleted', 'success');
@@ -117,7 +143,7 @@ export const Payments: React.FC = () => {
              { header: 'ID', accessor: 'payment_id', className: 'w-16' },
              { header: 'Booking ID', accessor: 'booking_id' },
              { header: 'Customer', accessor: (row) => row.customer_name || getCustomerNameForPayment(row.booking_id) },
-             { header: 'Amount (PKR)', accessor: (row) => row.amount.toLocaleString() },
+             { header: 'Amount (PKR)', accessor: (row) => row.amount?.toLocaleString() },
              { header: 'Date', accessor: 'payment_date' },
              { header: 'Status', accessor: (row) => (
                  <span className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wide ${

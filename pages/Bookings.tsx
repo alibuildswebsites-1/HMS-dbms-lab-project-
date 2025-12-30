@@ -50,15 +50,48 @@ export const Bookings: React.FC = () => {
   const fetchData = async () => {
     setIsLoading(true);
     try {
-      const [bookingsData, customersData, roomsData] = await Promise.all([
-        api.get<Booking[]>('http://192.168.43.54:5000/api/bookings'),
-        api.get<Customer[]>('http://192.168.43.54:5000/api/customers'),
-        api.get<Room[]>('http://192.168.43.54:5000/api/rooms')
+      const [bookingsRaw, customersRaw, roomsRaw] = await Promise.all([
+        api.get<any[]>('http://192.168.43.54:5000/api/bookings'),
+        api.get<any[]>('http://192.168.43.54:5000/api/customers'),
+        api.get<any[]>('http://192.168.43.54:5000/api/rooms')
       ]);
-      // Sort bookings by booking_id ascending
-      setBookings(bookingsData.sort((a, b) => (a.booking_id || 0) - (b.booking_id || 0)));
-      setCustomers(customersData);
-      setRooms(roomsData);
+
+      const mappedBookings: Booking[] = bookingsRaw.map(b => ({
+          booking_id: b.Booking_ID || b.booking_id,
+          customer_id: b.Customer_ID || b.customer_id,
+          room_id: b.Room_ID || b.room_id,
+          customer_name: b.Customer_Name || b.customer_name,
+          room_number: b.Room_Number || b.room_number,
+          booking_date: b.Booking_Date || b.booking_date,
+          check_in_date: b.Check_In_Date || b.check_in_date,
+          check_out_date: b.Check_Out_Date || b.check_out_date,
+          number_of_guests: b.Number_Of_Guests || b.number_of_guests,
+          total_amount: b.Total_Amount || b.total_amount,
+          booking_status: b.Booking_Status || b.booking_status,
+      }));
+
+      const mappedCustomers: Customer[] = customersRaw.map(item => ({
+        customer_id: item.Customer_ID || item.customer_id,
+        customer_name: item.Customer_Name || item.customer_name,
+        email: item.Email || item.email,
+        phone: item.Phone || item.phone,
+        address: item.Address || item.address,
+        nationality: item.Nationality || item.nationality,
+        id: item.ID || item.id || item.CNIC
+      }));
+
+      const mappedRooms: Room[] = roomsRaw.map(item => ({
+        room_id: item.Room_ID || item.room_id,
+        room_number: item.Room_Number || item.room_number,
+        room_type: item.Room_Type || item.room_type,
+        floor_number: item.Floor_Number || item.floor_number,
+        price_per_night: item.Price_Per_Night || item.price_per_night,
+        room_status: item.Room_Status || item.room_status,
+      }));
+
+      setBookings(mappedBookings.sort((a, b) => (a.booking_id || 0) - (b.booking_id || 0)));
+      setCustomers(mappedCustomers);
+      setRooms(mappedRooms);
     } catch (error) {
        showNotification('Failed to fetch data', 'error');
        setBookings([]);
@@ -80,7 +113,7 @@ export const Bookings: React.FC = () => {
   const filteredBookings = useMemo(() => {
       return bookings.filter(b => {
           const cName = b.customer_name || getCustomerName(b.customer_id);
-          const matchesCustomer = customerSearch === '' || cName.toLowerCase().includes(customerSearch.toLowerCase());
+          const matchesCustomer = customerSearch === '' || cName?.toLowerCase().includes(customerSearch.toLowerCase());
           const matchesStatus = statusFilter === '' || b.booking_status === statusFilter;
           
           let matchesDate = true;
@@ -127,7 +160,10 @@ export const Bookings: React.FC = () => {
   };
 
   const handleDelete = async () => {
-    if (!deletingBooking?.booking_id) return;
+    if (!deletingBooking || !deletingBooking.booking_id) {
+        showNotification('Error: Invalid Booking ID', 'error');
+        return;
+    }
     try {
       await api.delete(`http://192.168.43.54:5000/api/bookings/${deletingBooking.booking_id}`);
       showNotification('Booking deleted', 'success');
@@ -260,7 +296,7 @@ export const Bookings: React.FC = () => {
           { header: 'Check In', accessor: 'check_in_date' },
           { header: 'Check Out', accessor: 'check_out_date' },
           { header: 'Guests', accessor: 'number_of_guests' },
-          { header: 'Total (PKR)', accessor: (row) => row.total_amount.toLocaleString() },
+          { header: 'Total (PKR)', accessor: (row) => row.total_amount?.toLocaleString() },
           {
             header: 'Status',
             accessor: (row) => (
