@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { 
   LayoutDashboard, Users, BedDouble, CalendarCheck, 
-  CreditCard, Briefcase, LogOut, Bell, User, Menu, X
+  CreditCard, Briefcase, LogOut, User, Menu, X
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
@@ -110,11 +110,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, title }) => {
           </div>
 
           <div className="flex items-center gap-3 sm:gap-6">
-            <button className="relative p-2 text-gray-400 hover:text-[#FDB913] transition-colors">
-              <Bell size={24} />
-              <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
-            </button>
-            <div className="flex items-center gap-3 pl-3 sm:pl-6 border-l border-gray-200">
+            <div className="flex items-center gap-3">
               <div className="text-right hidden sm:block">
                 <p className="text-sm font-semibold text-gray-800">{user?.name || 'Admin User'}</p>
                 <p className="text-xs text-gray-500">Manager</p>
