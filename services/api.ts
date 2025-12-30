@@ -1,20 +1,18 @@
-const BASE_URL = 'http://localhost:5000';
-
 export const api = {
-  get: async <T>(endpoint: string): Promise<T> => {
+  get: async <T>(url: string): Promise<T> => {
     try {
-      const response = await fetch(`${BASE_URL}${endpoint}`);
+      const response = await fetch(url);
       if (!response.ok) throw new Error(`Error: ${response.statusText} (${response.status})`);
       return await response.json();
     } catch (error) {
-      console.error(`GET ${endpoint} failed:`, error);
+      console.error(`GET ${url} failed:`, error);
       throw error;
     }
   },
 
-  post: async <T>(endpoint: string, data: any): Promise<T> => {
+  post: async <T>(url: string, data: any): Promise<T> => {
     try {
-      const response = await fetch(`${BASE_URL}${endpoint}`, {
+      const response = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
@@ -22,14 +20,14 @@ export const api = {
       if (!response.ok) throw new Error(`Error: ${response.statusText} (${response.status})`);
       return await response.json();
     } catch (error) {
-      console.error(`POST ${endpoint} failed:`, error);
+      console.error(`POST ${url} failed:`, error);
       throw error;
     }
   },
 
-  put: async <T>(endpoint: string, data: any): Promise<T> => {
+  put: async <T>(url: string, data: any): Promise<T> => {
     try {
-      const response = await fetch(`${BASE_URL}${endpoint}`, {
+      const response = await fetch(url, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
@@ -37,19 +35,19 @@ export const api = {
       if (!response.ok) throw new Error(`Error: ${response.statusText} (${response.status})`);
       return await response.json();
     } catch (error) {
-      console.error(`PUT ${endpoint} failed:`, error);
+      console.error(`PUT ${url} failed:`, error);
       throw error;
     }
   },
 
-  delete: async (endpoint: string): Promise<void> => {
+  delete: async (url: string): Promise<void> => {
     try {
-      const response = await fetch(`${BASE_URL}${endpoint}`, {
+      const response = await fetch(url, {
         method: 'DELETE',
       });
       if (!response.ok) throw new Error(`Error: ${response.statusText} (${response.status})`);
     } catch (error) {
-      console.error(`DELETE ${endpoint} failed:`, error);
+      console.error(`DELETE ${url} failed:`, error);
       throw error;
     }
   },

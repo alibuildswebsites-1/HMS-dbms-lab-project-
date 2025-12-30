@@ -26,7 +26,7 @@ export const Bookings: React.FC = () => {
     const diffTime = Math.abs(end.getTime() - start.getTime());
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
     
-    // Find room price - Updated to use room_id
+    // Find room price
     const room = rooms.find(r => r.room_id === Number(formData.room_id));
     if (!room) return 0;
     
@@ -44,9 +44,9 @@ export const Bookings: React.FC = () => {
     setIsLoading(true);
     try {
       const [bookingsData, customersData, roomsData] = await Promise.all([
-        api.get<Booking[]>('/bookings'),
-        api.get<Customer[]>('/customers'),
-        api.get<Room[]>('/rooms')
+        api.get<Booking[]>('http://localhost:5000/api/bookings'),
+        api.get<Customer[]>('http://localhost:5000/api/customers'),
+        api.get<Room[]>('http://localhost:5000/api/rooms')
       ]);
       setBookings(bookingsData);
       setCustomers(customersData);
@@ -66,12 +66,24 @@ export const Bookings: React.FC = () => {
   }, []);
 
   const handleSubmit = async () => {
+    // Map to PascalCase for API
+    const payload = {
+        Customer_ID: formData.customer_id,
+        Room_ID: formData.room_id,
+        Booking_Date: new Date().toISOString().split('T')[0], // Set current date as Booking Date
+        Check_In_Date: formData.check_in_date,
+        Check_Out_Date: formData.check_out_date,
+        Number_Of_Guests: formData.number_of_guests,
+        Total_Amount: formData.total_amount,
+        Booking_Status: formData.booking_status
+    };
+
     try {
       if (editingBooking && editingBooking.booking_id) {
-        await api.put(`/bookings/${editingBooking.booking_id}`, formData);
+        await api.put(`http://localhost:5000/api/bookings/${editingBooking.booking_id}`, payload);
         showNotification('Booking updated', 'success');
       } else {
-        await api.post('/bookings', formData);
+        await api.post('http://localhost:5000/api/bookings', payload);
         showNotification('Booking created', 'success');
       }
       setIsModalOpen(false);
@@ -84,7 +96,7 @@ export const Bookings: React.FC = () => {
   const handleDelete = async () => {
     if (!deletingBooking?.booking_id) return;
     try {
-      await api.delete(`/bookings/${deletingBooking.booking_id}`);
+      await api.delete(`http://localhost:5000/api/bookings/${deletingBooking.booking_id}`);
       showNotification('Booking deleted', 'success');
       setDeletingBooking(null);
       fetchData();
@@ -96,7 +108,17 @@ export const Bookings: React.FC = () => {
   const handleCancelBooking = async (booking: Booking) => {
     try {
         if (booking.booking_id) {
-          await api.put(`/bookings/${booking.booking_id}`, { ...booking, booking_status: BookingStatus.CANCELLED });
+          const payload = {
+              Customer_ID: booking.customer_id,
+              Room_ID: booking.room_id,
+              Booking_Date: booking.booking_date || new Date().toISOString().split('T')[0],
+              Check_In_Date: booking.check_in_date,
+              Check_Out_Date: booking.check_out_date,
+              Number_Of_Guests: booking.number_of_guests,
+              Total_Amount: booking.total_amount,
+              Booking_Status: BookingStatus.CANCELLED
+          };
+          await api.put(`http://localhost:5000/api/bookings/${booking.booking_id}`, payload);
           showNotification('Booking cancelled', 'success');
           fetchData();
         }
@@ -117,6 +139,10 @@ export const Bookings: React.FC = () => {
     setIsModalOpen(true);
   };
 
+  // Helper to find names (since API might return IDs only)
+  const getCustomerName = (id: number) => customers.find(c => c.customer_id === id)?.customer_name || id;
+  const getRoomNumber = (id: number) => rooms.find(r => r.room_id === id)?.room_number || id;
+
   return (
     <Layout title="Bookings">
       <div className="flex justify-end mb-6">
@@ -134,8 +160,8 @@ export const Bookings: React.FC = () => {
         isLoading={isLoading}
         columns={[
           { header: 'ID', accessor: 'booking_id', className: 'w-16' },
-          { header: 'Customer', accessor: 'customer_name' },
-          { header: 'Room', accessor: 'room_number' },
+          { header: 'Customer', accessor: (row) => row.customer_name || getCustomerName(row.customer_id) },
+          { header: 'Room', accessor: (row) => row.room_number || getRoomNumber(row.room_id) },
           { header: 'Check In', accessor: 'check_in_date' },
           { header: 'Check Out', accessor: 'check_out_date' },
           { header: 'Guests', accessor: 'number_of_guests' },
@@ -177,7 +203,7 @@ export const Bookings: React.FC = () => {
                 onChange={(e) => setFormData({...formData, customer_id: Number(e.target.value)})}
             >
                 <option value="">Select Customer</option>
-                {customers.map(c => <option key={c.customer_id} value={c.customer_id}>{c.customer_name} ({c.cnic_id})</option>)}
+                {customers.map(c => <option key={c.customer_id} value={c.customer_id}>{c.customer_name} ({c.id})</option>)}
             </FormSelect>
 
             <FormSelect

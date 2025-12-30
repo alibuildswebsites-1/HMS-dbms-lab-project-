@@ -20,7 +20,7 @@ export const Rooms: React.FC = () => {
   const fetchRooms = async () => {
     setIsLoading(true);
     try {
-      const data = await api.get<Room[]>('/rooms');
+      const data = await api.get<Room[]>('http://localhost:5000/api/rooms');
       setRooms(data);
     } catch (error) {
       showNotification('Failed to fetch rooms', 'error');
@@ -45,12 +45,22 @@ export const Rooms: React.FC = () => {
 
   const handleSubmit = async () => {
     if (!validate()) return;
+
+    // Map to PascalCase for API
+    const payload = {
+      Room_Number: formData.room_number,
+      Room_Type: formData.room_type,
+      Floor_Number: formData.floor_number,
+      Price_Per_Night: formData.price_per_night,
+      Room_Status: formData.room_status
+    };
+
     try {
       if (editingRoom && editingRoom.room_id) {
-        await api.put(`/rooms/${editingRoom.room_id}`, formData);
+        await api.put(`http://localhost:5000/api/rooms/${editingRoom.room_id}`, payload);
         showNotification('Room updated', 'success');
       } else {
-        await api.post('/rooms', formData);
+        await api.post('http://localhost:5000/api/rooms', payload);
         showNotification('Room created', 'success');
       }
       setIsModalOpen(false);
@@ -63,7 +73,7 @@ export const Rooms: React.FC = () => {
   const handleDelete = async () => {
     if (!deletingRoom?.room_id) return;
     try {
-      await api.delete(`/rooms/${deletingRoom.room_id}`);
+      await api.delete(`http://localhost:5000/api/rooms/${deletingRoom.room_id}`);
       showNotification('Room deleted', 'success');
       setDeletingRoom(null);
       fetchRooms();
@@ -75,7 +85,14 @@ export const Rooms: React.FC = () => {
   const handleStatusUpdate = async (room: Room, status: string) => {
     try {
       if (room.room_id) {
-        await api.put(`/rooms/${room.room_id}`, { ...room, room_status: status });
+        const payload = {
+           Room_Number: room.room_number,
+           Room_Type: room.room_type,
+           Floor_Number: room.floor_number,
+           Price_Per_Night: room.price_per_night,
+           Room_Status: status
+        };
+        await api.put(`http://localhost:5000/api/rooms/${room.room_id}`, payload);
         showNotification(`Status updated to ${status}`, 'success');
         fetchRooms();
       }

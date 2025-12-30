@@ -22,7 +22,7 @@ export const Customers: React.FC = () => {
   const fetchCustomers = async () => {
     setIsLoading(true);
     try {
-      const data = await api.get<Customer[]>('/customers');
+      const data = await api.get<Customer[]>('http://localhost:5000/api/customers');
       setCustomers(data);
     } catch (error) {
       showNotification('Failed to fetch customers', 'error');
@@ -43,7 +43,7 @@ export const Customers: React.FC = () => {
     if (!formData.email) newErrors.email = 'Email is required';
     if (!formData.phone) newErrors.phone = 'Phone is required';
     if (!formData.nationality) newErrors.nationality = 'Nationality is required';
-    if (!formData.cnic_id) newErrors.cnic_id = 'CNIC is required';
+    if (!formData.id) newErrors.id = 'CNIC/ID is required';
     
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -52,12 +52,22 @@ export const Customers: React.FC = () => {
   const handleSubmit = async () => {
     if (!validate()) return;
 
+    // Map to PascalCase for API
+    const payload = {
+      Customer_Name: formData.customer_name,
+      Email: formData.email,
+      Phone: formData.phone,
+      Address: formData.address,
+      Nationality: formData.nationality,
+      ID: formData.id // Mapping frontend 'id' (CNIC) to backend 'ID'
+    };
+
     try {
       if (editingCustomer && editingCustomer.customer_id) {
-        await api.put(`/customers/${editingCustomer.customer_id}`, formData);
+        await api.put(`http://localhost:5000/api/customers/${editingCustomer.customer_id}`, payload);
         showNotification('Customer updated successfully', 'success');
       } else {
-        await api.post('/customers', formData);
+        await api.post('http://localhost:5000/api/customers', payload);
         showNotification('Customer added successfully', 'success');
       }
       setIsModalOpen(false);
@@ -70,7 +80,7 @@ export const Customers: React.FC = () => {
   const handleDelete = async () => {
     if (!deletingCustomer?.customer_id) return;
     try {
-      await api.delete(`/customers/${deletingCustomer.customer_id}`);
+      await api.delete(`http://localhost:5000/api/customers/${deletingCustomer.customer_id}`);
       showNotification('Customer deleted successfully', 'success');
       setDeletingCustomer(null);
       fetchCustomers();
@@ -87,7 +97,7 @@ export const Customers: React.FC = () => {
       phone: '',
       address: '',
       nationality: '',
-      cnic_id: ''
+      id: ''
     });
     setErrors({});
     setIsModalOpen(true);
@@ -114,7 +124,7 @@ export const Customers: React.FC = () => {
           { header: 'Email', accessor: 'email' },
           { header: 'Phone', accessor: 'phone' },
           { header: 'Nationality', accessor: 'nationality' },
-          { header: 'CNIC', accessor: 'cnic_id' },
+          { header: 'CNIC', accessor: 'id' },
         ]}
         onEdit={(item) => openModal(item)}
         onDelete={(item) => setDeletingCustomer(item)}
@@ -159,16 +169,15 @@ export const Customers: React.FC = () => {
             />
             <FormInput
               label="CNIC / ID"
-              value={formData.cnic_id || ''}
-              onChange={(e) => setFormData({ ...formData, cnic_id: e.target.value })}
-              error={errors.cnic_id}
+              value={formData.id || ''}
+              onChange={(e) => setFormData({ ...formData, id: e.target.value })}
+              error={errors.id}
             />
           </div>
           <FormInput
             label="Address"
             value={formData.address || ''}
             onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-            // Address not required
           />
           <div className="flex justify-end gap-3 mt-6">
             <button onClick={() => setIsModalOpen(false)} className="px-4 py-2 border rounded-lg hover:bg-gray-50">Cancel</button>
@@ -187,7 +196,7 @@ export const Customers: React.FC = () => {
                <div><p className="text-sm text-gray-500">Name</p><p className="font-medium">{viewingCustomer.customer_name}</p></div>
                <div><p className="text-sm text-gray-500">Email</p><p className="font-medium">{viewingCustomer.email}</p></div>
                <div><p className="text-sm text-gray-500">Phone</p><p className="font-medium">{viewingCustomer.phone}</p></div>
-               <div><p className="text-sm text-gray-500">CNIC</p><p className="font-medium">{viewingCustomer.cnic_id}</p></div>
+               <div><p className="text-sm text-gray-500">CNIC</p><p className="font-medium">{viewingCustomer.id}</p></div>
                <div><p className="text-sm text-gray-500">Nationality</p><p className="font-medium">{viewingCustomer.nationality}</p></div>
                <div className="col-span-2"><p className="text-sm text-gray-500">Address</p><p className="font-medium">{viewingCustomer.address}</p></div>
             </div>

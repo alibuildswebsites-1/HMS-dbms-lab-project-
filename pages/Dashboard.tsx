@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Layout } from '../components/Layout';
 import { Users, BedDouble, Key, CalendarCheck, Briefcase, DollarSign } from 'lucide-react';
-import { Stats, RoomStatus, PaymentStatus } from '../types';
+import { Stats } from '../types';
 import { api } from '../services/api';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
@@ -27,7 +27,6 @@ export const Dashboard: React.FC = () => {
     totalRevenue: 0
   });
 
-  // Mock data for chart - kept as visual placeholder for now, but could be connected to API similarly
   const chartData = [
     { name: 'Mon', revenue: 0 },
     { name: 'Tue', revenue: 0 },
@@ -41,31 +40,10 @@ export const Dashboard: React.FC = () => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        // Fetch all data in parallel to calculate stats
-        const [customers, rooms, bookings, payments, employees] = await Promise.all([
-          api.get<any[]>('/customers'),
-          api.get<any[]>('/rooms'),
-          api.get<any[]>('/bookings'),
-          api.get<any[]>('/payments'),
-          api.get<any[]>('/employees')
-        ]);
-
-        const totalRevenue = payments
-          .filter((p: any) => p.payment_status === PaymentStatus.COMPLETED)
-          .reduce((sum: number, p: any) => sum + Number(p.amount), 0);
-
-        const availableRooms = rooms.filter((r: any) => r.room_status === RoomStatus.AVAILABLE).length;
-
-        setStats({
-          totalCustomers: customers.length,
-          totalRooms: rooms.length,
-          availableRooms: availableRooms,
-          totalBookings: bookings.length,
-          totalEmployees: employees.length,
-          totalRevenue: totalRevenue
-        });
+        const data = await api.get<Stats>('http://localhost:5000/api/stats');
+        setStats(data);
       } catch (e) {
-        console.error("Failed to fetch dashboard data", e);
+        console.error("Failed to fetch dashboard stats", e);
       }
     };
     fetchStats();
@@ -79,7 +57,7 @@ export const Dashboard: React.FC = () => {
         <StatCard title="Available Rooms" value={stats.availableRooms} icon={Key} color="bg-green-600" />
         <StatCard title="Total Bookings" value={stats.totalBookings} icon={CalendarCheck} color="bg-orange-500" />
         <StatCard title="Employees" value={stats.totalEmployees} icon={Briefcase} color="bg-purple-600" />
-        <StatCard title="Total Revenue" value={`PKR ${stats.totalRevenue.toLocaleString()}`} icon={DollarSign} color="bg-[#FDB913]" />
+        <StatCard title="Total Revenue" value={`PKR ${Number(stats.totalRevenue).toLocaleString()}`} icon={DollarSign} color="bg-[#FDB913]" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">

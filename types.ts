@@ -5,7 +5,7 @@ export interface Customer {
   phone: string;
   address: string;
   nationality: string;
-  cnic_id: string;
+  id: string; // Corresponds to CNIC/National ID based on prompt
 }
 
 export enum RoomType {
@@ -44,9 +44,11 @@ export interface Booking {
   booking_id?: number;
   customer_id: number;
   room_id: number;
-  customer_name?: string; // For display
-  room_number?: string; // For display
-  room_type?: string; // For display
+  // Optional display fields often joined by backend or mapped in frontend
+  customer_name?: string; 
+  room_number?: string;
+  
+  booking_date?: string;
   check_in_date: string;
   check_out_date: string;
   number_of_guests: number;
@@ -72,13 +74,12 @@ export interface Payment {
 export interface Employee {
   employee_id: number;
   employee_name: string;
-  department_name: string;
+  department_id?: number;
+  department_name?: string; // Optional if joined
   position: string;
-  phone: string;
-  email: string;
   salary: number;
   hire_date: string;
-  employee_status: 'Active' | 'Inactive';
+  employee_status: string;
 }
 
 export interface Stats {

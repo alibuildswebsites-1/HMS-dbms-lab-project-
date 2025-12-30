@@ -15,7 +15,7 @@ export const Employees: React.FC = () => {
       const fetchEmployees = async () => {
           setIsLoading(true);
           try {
-              const data = await api.get<Employee[]>('/employees');
+              const data = await api.get<Employee[]>('http://localhost:5000/api/employees');
               setEmployees(data);
           } catch (e) {
               showNotification('Failed to fetch employees', 'error');
@@ -35,9 +35,8 @@ export const Employees: React.FC = () => {
             columns={[
                 { header: 'ID', accessor: 'employee_id', className: 'w-16' },
                 { header: 'Name', accessor: 'employee_name' },
-                { header: 'Department', accessor: 'department_name' },
+                { header: 'Department', accessor: (row) => row.department_name || row.department_id || '-' },
                 { header: 'Position', accessor: 'position' },
-                { header: 'Phone', accessor: 'phone' },
                 { header: 'Status', accessor: (row) => (
                     <span className={`px-2 py-1 rounded-full text-xs font-semibold ${row.employee_status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
                         {row.employee_status}
@@ -61,10 +60,8 @@ export const Employees: React.FC = () => {
                         </div>
                     </div>
                     <div className="grid grid-cols-2 gap-4 border-t pt-4">
-                        <div><p className="text-sm text-gray-500">Department</p><p className="font-medium">{viewingEmployee.department_name}</p></div>
+                        <div><p className="text-sm text-gray-500">Department</p><p className="font-medium">{viewingEmployee.department_name || viewingEmployee.department_id}</p></div>
                         <div><p className="text-sm text-gray-500">Status</p><p className="font-medium">{viewingEmployee.employee_status}</p></div>
-                        <div><p className="text-sm text-gray-500">Email</p><p className="font-medium">{viewingEmployee.email}</p></div>
-                        <div><p className="text-sm text-gray-500">Phone</p><p className="font-medium">{viewingEmployee.phone}</p></div>
                         <div><p className="text-sm text-gray-500">Salary</p><p className="font-medium">PKR {viewingEmployee.salary.toLocaleString()}</p></div>
                         <div><p className="text-sm text-gray-500">Hire Date</p><p className="font-medium">{viewingEmployee.hire_date}</p></div>
                     </div>

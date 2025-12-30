@@ -20,8 +20,8 @@ export const Payments: React.FC = () => {
     setIsLoading(true);
     try {
         const [payData, bookData] = await Promise.all([
-            api.get<Payment[]>('/payments'),
-            api.get<Booking[]>('/bookings')
+            api.get<Payment[]>('http://localhost:5000/api/payments'),
+            api.get<Booking[]>('http://localhost:5000/api/bookings')
         ]);
         setPayments(payData);
         setBookings(bookData);
@@ -37,12 +37,20 @@ export const Payments: React.FC = () => {
   useEffect(() => { fetchData(); }, []);
 
   const handleSubmit = async () => {
+     // Map to PascalCase
+     const payload = {
+         Booking_ID: formData.booking_id,
+         Amount: formData.amount,
+         Payment_Date: formData.payment_date,
+         Payment_Status: formData.payment_status
+     };
+
      try {
         if(editingPayment && editingPayment.payment_id) {
-            await api.put(`/payments/${editingPayment.payment_id}`, formData);
+            await api.put(`http://localhost:5000/api/payments/${editingPayment.payment_id}`, payload);
             showNotification('Payment updated', 'success');
         } else {
-            await api.post('/payments', formData);
+            await api.post('http://localhost:5000/api/payments', payload);
             showNotification('Payment recorded', 'success');
         }
         setIsModalOpen(false);
@@ -55,7 +63,7 @@ export const Payments: React.FC = () => {
   const handleDelete = async () => {
       if(!deletingPayment?.payment_id) return;
       try {
-          await api.delete(`/payments/${deletingPayment.payment_id}`);
+          await api.delete(`http://localhost:5000/api/payments/${deletingPayment.payment_id}`);
           showNotification('Payment deleted', 'success');
           setDeletingPayment(null);
           fetchData();
@@ -77,6 +85,12 @@ export const Payments: React.FC = () => {
   const totalRevenue = payments
     .filter(p => p.payment_status === PaymentStatus.COMPLETED)
     .reduce((sum, p) => sum + p.amount, 0);
+
+  // Helper for displaying customer names if backend only sends booking_id
+  const getCustomerNameForPayment = (bookingId: number) => {
+      const booking = bookings.find(b => b.booking_id === bookingId);
+      return booking ? (booking.customer_name || `Booking #${bookingId}`) : `Booking #${bookingId}`;
+  };
 
   return (
     <Layout title="Payments">
@@ -100,7 +114,7 @@ export const Payments: React.FC = () => {
          columns={[
              { header: 'ID', accessor: 'payment_id', className: 'w-16' },
              { header: 'Booking ID', accessor: 'booking_id' },
-             { header: 'Customer', accessor: 'customer_name' },
+             { header: 'Customer', accessor: (row) => row.customer_name || getCustomerNameForPayment(row.booking_id) },
              { header: 'Amount (PKR)', accessor: (row) => row.amount.toLocaleString() },
              { header: 'Date', accessor: 'payment_date' },
              { header: 'Status', accessor: (row) => (
@@ -125,7 +139,7 @@ export const Payments: React.FC = () => {
                     disabled={!!editingPayment}
                 >
                     <option value="">Select Booking</option>
-                    {bookings.map(b => <option key={b.booking_id} value={b.booking_id}>Booking #{b.booking_id} - {b.customer_name}</option>)}
+                    {bookings.map(b => <option key={b.booking_id} value={b.booking_id}>Booking #{b.booking_id} - {b.customer_name || 'Customer'}</option>)}
                 </FormSelect>
                 <FormInput
                     label="Amount"
@@ -136,7 +150,7 @@ export const Payments: React.FC = () => {
                 <FormInput
                     label="Date"
                     type="date"
-                    value={formData.payment_date}
+                    value={formData.payment_date ? new Date(formData.payment_date).toISOString().split('T')[0] : ''}
                     onChange={(e) => setFormData({...formData, payment_date: e.target.value})}
                 />
                 <FormSelect
