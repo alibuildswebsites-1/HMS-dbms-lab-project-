@@ -25,9 +25,9 @@ export const Rooms: React.FC = () => {
     } catch (error) {
       showNotification('Failed to fetch rooms', 'error');
       setRooms([
-        { id: 1, room_number: '101', room_type: RoomType.SINGLE, floor_number: 1, price_per_night: 5000, room_status: RoomStatus.AVAILABLE },
-        { id: 2, room_number: '102', room_type: RoomType.DOUBLE, floor_number: 1, price_per_night: 8000, room_status: RoomStatus.OCCUPIED },
-        { id: 3, room_number: '201', room_type: RoomType.DELUXE, floor_number: 2, price_per_night: 15000, room_status: RoomStatus.MAINTENANCE },
+        { room_id: 1, room_number: '101', room_type: RoomType.SINGLE, floor_number: 1, price_per_night: 5000, room_status: RoomStatus.AVAILABLE },
+        { room_id: 2, room_number: '102', room_type: RoomType.DOUBLE, floor_number: 1, price_per_night: 8000, room_status: RoomStatus.OCCUPIED },
+        { room_id: 3, room_number: '201', room_type: RoomType.DELUXE, floor_number: 2, price_per_night: 15000, room_status: RoomStatus.MAINTENANCE },
       ]);
     } finally {
       setIsLoading(false);
@@ -50,8 +50,8 @@ export const Rooms: React.FC = () => {
   const handleSubmit = async () => {
     if (!validate()) return;
     try {
-      if (editingRoom) {
-        await api.put(`/rooms/${editingRoom.id}`, formData);
+      if (editingRoom && editingRoom.room_id) {
+        await api.put(`/rooms/${editingRoom.room_id}`, formData);
         showNotification('Room updated', 'success');
       } else {
         await api.post('/rooms', formData);
@@ -65,9 +65,9 @@ export const Rooms: React.FC = () => {
   };
 
   const handleDelete = async () => {
-    if (!deletingRoom?.id) return;
+    if (!deletingRoom?.room_id) return;
     try {
-      await api.delete(`/rooms/${deletingRoom.id}`);
+      await api.delete(`/rooms/${deletingRoom.room_id}`);
       showNotification('Room deleted', 'success');
       setDeletingRoom(null);
       fetchRooms();
@@ -78,9 +78,11 @@ export const Rooms: React.FC = () => {
 
   const handleStatusUpdate = async (room: Room, status: string) => {
     try {
-      await api.put(`/rooms/${room.id}`, { ...room, room_status: status });
-      showNotification(`Status updated to ${status}`, 'success');
-      fetchRooms();
+      if (room.room_id) {
+        await api.put(`/rooms/${room.room_id}`, { ...room, room_status: status });
+        showNotification(`Status updated to ${status}`, 'success');
+        fetchRooms();
+      }
     } catch (error) {
       showNotification('Failed to update status', 'error');
     }
@@ -121,7 +123,7 @@ export const Rooms: React.FC = () => {
         </button>
       </div>
 
-      <DataTable
+      <DataTable<Room>
         data={rooms}
         isLoading={isLoading}
         columns={[

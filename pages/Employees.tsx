@@ -17,8 +17,8 @@ export const Employees: React.FC = () => {
               setEmployees(data);
           } catch (e) {
               setEmployees([
-                  { id: 1, employee_name: 'John Doe', department_name: 'Housekeeping', position: 'Supervisor', phone: '0300-0000000', email: 'john@hotel.com', salary: 45000, hire_date: '2022-01-01', employee_status: 'Active' },
-                  { id: 2, employee_name: 'Jane Smith', department_name: 'Front Desk', position: 'Receptionist', phone: '0300-1111111', email: 'jane@hotel.com', salary: 50000, hire_date: '2022-03-15', employee_status: 'Active' }
+                  { employee_id: 1, employee_name: 'John Doe', department_name: 'Housekeeping', position: 'Supervisor', phone: '0300-0000000', email: 'john@hotel.com', salary: 45000, hire_date: '2022-01-01', employee_status: 'Active' },
+                  { employee_id: 2, employee_name: 'Jane Smith', department_name: 'Front Desk', position: 'Receptionist', phone: '0300-1111111', email: 'jane@hotel.com', salary: 50000, hire_date: '2022-03-15', employee_status: 'Active' }
               ]);
           } finally {
               setIsLoading(false);
@@ -33,7 +33,7 @@ export const Employees: React.FC = () => {
             data={employees}
             isLoading={isLoading}
             columns={[
-                { header: 'ID', accessor: 'id', className: 'w-16' },
+                { header: 'ID', accessor: 'employee_id', className: 'w-16' },
                 { header: 'Name', accessor: 'employee_name' },
                 { header: 'Department', accessor: 'department_name' },
                 { header: 'Position', accessor: 'position' },

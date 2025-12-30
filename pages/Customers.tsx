@@ -28,8 +28,8 @@ export const Customers: React.FC = () => {
       showNotification('Failed to fetch customers', 'error');
       // Mock Data for Demo
       setCustomers([
-        { id: 1, customer_name: 'Ali Khan', email: 'ali@example.com', phone: '03001234567', address: 'Lahore', nationality: 'Pakistani', cnic_id: '35202-1234567-1' },
-        { id: 2, customer_name: 'Sara Ahmed', email: 'sara@example.com', phone: '03217654321', address: 'Karachi', nationality: 'Pakistani', cnic_id: '42101-7654321-2' },
+        { customer_id: 1, customer_name: 'Ali Khan', email: 'ali@example.com', phone: '03001234567', address: 'Lahore', nationality: 'Pakistani', cnic_id: '35202-1234567-1' },
+        { customer_id: 2, customer_name: 'Sara Ahmed', email: 'sara@example.com', phone: '03217654321', address: 'Karachi', nationality: 'Pakistani', cnic_id: '42101-7654321-2' },
       ]);
     } finally {
       setIsLoading(false);
@@ -57,8 +57,8 @@ export const Customers: React.FC = () => {
     if (!validate()) return;
 
     try {
-      if (editingCustomer) {
-        await api.put(`/customers/${editingCustomer.id}`, formData);
+      if (editingCustomer && editingCustomer.customer_id) {
+        await api.put(`/customers/${editingCustomer.customer_id}`, formData);
         showNotification('Customer updated successfully', 'success');
       } else {
         await api.post('/customers', formData);
@@ -72,9 +72,9 @@ export const Customers: React.FC = () => {
   };
 
   const handleDelete = async () => {
-    if (!deletingCustomer?.id) return;
+    if (!deletingCustomer?.customer_id) return;
     try {
-      await api.delete(`/customers/${deletingCustomer.id}`);
+      await api.delete(`/customers/${deletingCustomer.customer_id}`);
       showNotification('Customer deleted successfully', 'success');
       setDeletingCustomer(null);
       fetchCustomers();
@@ -113,7 +113,7 @@ export const Customers: React.FC = () => {
         data={customers}
         isLoading={isLoading}
         columns={[
-          { header: 'ID', accessor: 'id', className: 'w-16' },
+          { header: 'ID', accessor: 'customer_id', className: 'w-16' },
           { header: 'Name', accessor: 'customer_name' },
           { header: 'Email', accessor: 'email' },
           { header: 'Phone', accessor: 'phone' },

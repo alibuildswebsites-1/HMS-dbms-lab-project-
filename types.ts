@@ -1,5 +1,5 @@
 export interface Customer {
-  id?: number;
+  customer_id?: number;
   customer_name: string;
   email: string;
   phone: string;
@@ -25,7 +25,7 @@ export enum RoomStatus {
 }
 
 export interface Room {
-  id?: number;
+  room_id?: number;
   room_number: string;
   room_type: RoomType;
   floor_number: number;
@@ -41,7 +41,7 @@ export enum BookingStatus {
 }
 
 export interface Booking {
-  id?: number;
+  booking_id?: number;
   customer_id: number;
   room_id: number;
   customer_name?: string; // For display
@@ -61,7 +61,7 @@ export enum PaymentStatus {
 }
 
 export interface Payment {
-  id?: number;
+  payment_id?: number;
   booking_id: number;
   customer_name?: string; // For display
   amount: number;
@@ -70,7 +70,7 @@ export interface Payment {
 }
 
 export interface Employee {
-  id: number;
+  employee_id: number;
   employee_name: string;
   department_name: string;
   position: string;

@@ -1,10 +1,10 @@
-const BASE_URL = 'http://localhost:5000/api';
+const BASE_URL = 'http://localhost:5000';
 
 export const api = {
   get: async <T>(endpoint: string): Promise<T> => {
     try {
       const response = await fetch(`${BASE_URL}${endpoint}`);
-      if (!response.ok) throw new Error(`Error: ${response.statusText}`);
+      if (!response.ok) throw new Error(`Error: ${response.statusText} (${response.status})`);
       return await response.json();
     } catch (error) {
       console.error(`GET ${endpoint} failed:`, error);
@@ -19,7 +19,7 @@ export const api = {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
       });
-      if (!response.ok) throw new Error(`Error: ${response.statusText}`);
+      if (!response.ok) throw new Error(`Error: ${response.statusText} (${response.status})`);
       return await response.json();
     } catch (error) {
       console.error(`POST ${endpoint} failed:`, error);
@@ -34,7 +34,7 @@ export const api = {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
       });
-      if (!response.ok) throw new Error(`Error: ${response.statusText}`);
+      if (!response.ok) throw new Error(`Error: ${response.statusText} (${response.status})`);
       return await response.json();
     } catch (error) {
       console.error(`PUT ${endpoint} failed:`, error);
@@ -47,7 +47,7 @@ export const api = {
       const response = await fetch(`${BASE_URL}${endpoint}`, {
         method: 'DELETE',
       });
-      if (!response.ok) throw new Error(`Error: ${response.statusText}`);
+      if (!response.ok) throw new Error(`Error: ${response.statusText} (${response.status})`);
     } catch (error) {
       console.error(`DELETE ${endpoint} failed:`, error);
       throw error;

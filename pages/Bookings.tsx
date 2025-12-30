@@ -26,8 +26,8 @@ export const Bookings: React.FC = () => {
     const diffTime = Math.abs(end.getTime() - start.getTime());
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
     
-    // Find room price
-    const room = rooms.find(r => r.id === Number(formData.room_id));
+    // Find room price - Updated to use room_id
+    const room = rooms.find(r => r.room_id === Number(formData.room_id));
     if (!room) return 0;
     
     return diffDays * room.price_per_night;
@@ -46,7 +46,7 @@ export const Bookings: React.FC = () => {
       const [bookingsData, customersData, roomsData] = await Promise.all([
         api.get<Booking[]>('/bookings'),
         api.get<Customer[]>('/customers'),
-        api.get<Room[]>('/rooms') // In a real app, maybe /rooms/available for create
+        api.get<Room[]>('/rooms')
       ]);
       setBookings(bookingsData);
       setCustomers(customersData);
@@ -54,10 +54,10 @@ export const Bookings: React.FC = () => {
     } catch (error) {
        // Mock fallback
        setBookings([
-         { id: 1, customer_id: 1, room_id: 2, customer_name: 'Ali Khan', room_number: '102', room_type: 'Double', check_in_date: '2023-10-01', check_out_date: '2023-10-05', number_of_guests: 2, total_amount: 32000, booking_status: BookingStatus.CONFIRMED },
+         { booking_id: 1, customer_id: 1, room_id: 2, customer_name: 'Ali Khan', room_number: '102', room_type: 'Double', check_in_date: '2023-10-01', check_out_date: '2023-10-05', number_of_guests: 2, total_amount: 32000, booking_status: BookingStatus.CONFIRMED },
        ]);
-       setCustomers([{ id: 1, customer_name: 'Ali Khan' } as any]);
-       setRooms([{ id: 2, room_number: '102', price_per_night: 8000 } as any]);
+       setCustomers([{ customer_id: 1, customer_name: 'Ali Khan' } as any]);
+       setRooms([{ room_id: 2, room_number: '102', price_per_night: 8000 } as any]);
     } finally {
       setIsLoading(false);
     }
@@ -69,8 +69,8 @@ export const Bookings: React.FC = () => {
 
   const handleSubmit = async () => {
     try {
-      if (editingBooking) {
-        await api.put(`/bookings/${editingBooking.id}`, formData);
+      if (editingBooking && editingBooking.booking_id) {
+        await api.put(`/bookings/${editingBooking.booking_id}`, formData);
         showNotification('Booking updated', 'success');
       } else {
         await api.post('/bookings', formData);
@@ -84,9 +84,9 @@ export const Bookings: React.FC = () => {
   };
 
   const handleDelete = async () => {
-    if (!deletingBooking?.id) return;
+    if (!deletingBooking?.booking_id) return;
     try {
-      await api.delete(`/bookings/${deletingBooking.id}`);
+      await api.delete(`/bookings/${deletingBooking.booking_id}`);
       showNotification('Booking deleted', 'success');
       setDeletingBooking(null);
       fetchData();
@@ -97,9 +97,11 @@ export const Bookings: React.FC = () => {
 
   const handleCancelBooking = async (booking: Booking) => {
     try {
-        await api.put(`/bookings/${booking.id}`, { ...booking, booking_status: BookingStatus.CANCELLED });
-        showNotification('Booking cancelled', 'success');
-        fetchData();
+        if (booking.booking_id) {
+          await api.put(`/bookings/${booking.booking_id}`, { ...booking, booking_status: BookingStatus.CANCELLED });
+          showNotification('Booking cancelled', 'success');
+          fetchData();
+        }
     } catch (error) {
         showNotification('Failed to cancel', 'error');
     }
@@ -129,11 +131,11 @@ export const Bookings: React.FC = () => {
         </button>
       </div>
 
-      <DataTable
+      <DataTable<Booking>
         data={bookings}
         isLoading={isLoading}
         columns={[
-          { header: 'ID', accessor: 'id', className: 'w-16' },
+          { header: 'ID', accessor: 'booking_id', className: 'w-16' },
           { header: 'Customer', accessor: 'customer_name' },
           { header: 'Room', accessor: 'room_number' },
           { header: 'Check In', accessor: 'check_in_date' },
@@ -177,7 +179,7 @@ export const Bookings: React.FC = () => {
                 onChange={(e) => setFormData({...formData, customer_id: Number(e.target.value)})}
             >
                 <option value="">Select Customer</option>
-                {customers.map(c => <option key={c.id} value={c.id}>{c.customer_name} ({c.cnic_id})</option>)}
+                {customers.map(c => <option key={c.customer_id} value={c.customer_id}>{c.customer_name} ({c.cnic_id})</option>)}
             </FormSelect>
 
             <FormSelect
@@ -187,7 +189,7 @@ export const Bookings: React.FC = () => {
             >
                 <option value="">Select Room</option>
                 {rooms.map(r => (
-                    <option key={r.id} value={r.id}>
+                    <option key={r.room_id} value={r.room_id}>
                         {r.room_number} - {r.room_type} ({r.price_per_night} PKR) {r.room_status !== RoomStatus.AVAILABLE && !editingBooking ? '(Not Available)' : ''}
                     </option>
                 ))}
@@ -244,7 +246,7 @@ export const Bookings: React.FC = () => {
       <ConfirmDialog
         isOpen={!!deletingBooking}
         title="Delete Booking"
-        message={`Delete booking #${deletingBooking?.id}?`}
+        message={`Delete booking #${deletingBooking?.booking_id}?`}
         onConfirm={handleDelete}
         onCancel={() => setDeletingBooking(null)}
       />

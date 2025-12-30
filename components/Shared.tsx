@@ -54,7 +54,8 @@ interface DataTableProps<T> {
   renderActions?: (item: T) => React.ReactNode;
 }
 
-export function DataTable<T extends { id?: number }>({ 
+// Removed the <T extends { id?: number }> constraint to allow custom ID fields like customer_id
+export function DataTable<T>({ 
   data, 
   columns, 
   onEdit, 

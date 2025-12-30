@@ -27,9 +27,9 @@ export const Payments: React.FC = () => {
         setBookings(bookData);
     } catch (e) {
         setPayments([
-            { id: 1, booking_id: 1, customer_name: 'Ali Khan', amount: 15000, payment_date: '2023-10-02', payment_status: PaymentStatus.COMPLETED }
+            { payment_id: 1, booking_id: 1, customer_name: 'Ali Khan', amount: 15000, payment_date: '2023-10-02', payment_status: PaymentStatus.COMPLETED }
         ]);
-        setBookings([{id: 1, customer_name: 'Ali Khan'} as any]);
+        setBookings([{booking_id: 1, customer_name: 'Ali Khan'} as any]);
     } finally {
         setIsLoading(false);
     }
@@ -39,8 +39,8 @@ export const Payments: React.FC = () => {
 
   const handleSubmit = async () => {
      try {
-        if(editingPayment) {
-            await api.put(`/payments/${editingPayment.id}`, formData);
+        if(editingPayment && editingPayment.payment_id) {
+            await api.put(`/payments/${editingPayment.payment_id}`, formData);
             showNotification('Payment updated', 'success');
         } else {
             await api.post('/payments', formData);
@@ -54,9 +54,9 @@ export const Payments: React.FC = () => {
   };
 
   const handleDelete = async () => {
-      if(!deletingPayment?.id) return;
+      if(!deletingPayment?.payment_id) return;
       try {
-          await api.delete(`/payments/${deletingPayment.id}`);
+          await api.delete(`/payments/${deletingPayment.payment_id}`);
           showNotification('Payment deleted', 'success');
           setDeletingPayment(null);
           fetchData();
@@ -95,11 +95,11 @@ export const Payments: React.FC = () => {
            </button>
        </div>
 
-       <DataTable
+       <DataTable<Payment>
          data={payments}
          isLoading={isLoading}
          columns={[
-             { header: 'ID', accessor: 'id', className: 'w-16' },
+             { header: 'ID', accessor: 'payment_id', className: 'w-16' },
              { header: 'Booking ID', accessor: 'booking_id' },
              { header: 'Customer', accessor: 'customer_name' },
              { header: 'Amount (PKR)', accessor: (row) => row.amount.toLocaleString() },
@@ -126,7 +126,7 @@ export const Payments: React.FC = () => {
                     disabled={!!editingPayment}
                 >
                     <option value="">Select Booking</option>
-                    {bookings.map(b => <option key={b.id} value={b.id}>Booking #{b.id} - {b.customer_name}</option>)}
+                    {bookings.map(b => <option key={b.booking_id} value={b.booking_id}>Booking #{b.booking_id} - {b.customer_name}</option>)}
                 </FormSelect>
                 <FormInput
                     label="Amount"
