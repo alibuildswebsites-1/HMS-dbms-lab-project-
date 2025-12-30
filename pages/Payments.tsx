@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Layout } from '../components/Layout';
-import { DataTable, Modal, ConfirmDialog, FormInput, FormSelect } from '../components/Shared';
+import { DataTable, Modal, FormInput, FormSelect } from '../components/Shared';
 import { Payment, PaymentStatus, Booking } from '../types';
 import { api } from '../services/api';
 import { useNotification } from '../context/NotificationContext';
@@ -12,7 +12,6 @@ export const Payments: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingPayment, setEditingPayment] = useState<Payment | null>(null);
-  const [deletingPayment, setDeletingPayment] = useState<Payment | null>(null);
   const { showNotification } = useNotification();
   const [formData, setFormData] = useState<Partial<Payment>>({});
 
@@ -84,21 +83,6 @@ export const Payments: React.FC = () => {
      }
   };
 
-  const handleDelete = async () => {
-      if(!deletingPayment || !deletingPayment.payment_id) {
-          showNotification('Error: Invalid Payment ID', 'error');
-          return;
-      }
-      try {
-          await api.delete(`http://192.168.43.54:5000/api/payments/${deletingPayment.payment_id}`);
-          showNotification('Payment deleted', 'success');
-          setDeletingPayment(null);
-          fetchData();
-      } catch (e) {
-          showNotification('Delete failed', 'error');
-      }
-  };
-
   const openModal = (payment?: Payment) => {
       setEditingPayment(payment || null);
       setFormData(payment || {
@@ -154,7 +138,6 @@ export const Payments: React.FC = () => {
              )}
          ]}
          onEdit={openModal}
-         onDelete={setDeletingPayment}
          searchPlaceholder="Search payments..."
        />
 
@@ -196,14 +179,6 @@ export const Payments: React.FC = () => {
                 </div>
            </div>
        </Modal>
-       
-       <ConfirmDialog
-        isOpen={!!deletingPayment}
-        title="Delete Payment"
-        message="Are you sure?"
-        onConfirm={handleDelete}
-        onCancel={() => setDeletingPayment(null)}
-       />
     </Layout>
   );
 };

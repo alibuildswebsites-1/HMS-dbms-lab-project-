@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Layout } from '../components/Layout';
-import { DataTable, Modal, ConfirmDialog, FormInput, FormSelect } from '../components/Shared';
+import { DataTable, Modal, FormInput, FormSelect } from '../components/Shared';
 import { Employee, Department } from '../types';
 import { api } from '../services/api';
 import { useNotification } from '../context/NotificationContext';
@@ -13,8 +13,6 @@ export const Employees: React.FC = () => {
   
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingEmployee, setEditingEmployee] = useState<Employee | null>(null);
-  const [viewingEmployee, setViewingEmployee] = useState<Employee | null>(null);
-  const [deletingEmployee, setDeletingEmployee] = useState<Employee | null>(null);
   
   const { showNotification } = useNotification();
   
@@ -103,21 +101,6 @@ export const Employees: React.FC = () => {
     }
   };
 
-  const handleDelete = async () => {
-    if (!deletingEmployee || !deletingEmployee.employee_id) {
-        showNotification('Error: Invalid Employee ID', 'error');
-        return;
-    }
-    try {
-        await api.delete(`http://192.168.43.54:5000/api/employees/${deletingEmployee.employee_id}`);
-        showNotification('Employee deleted successfully', 'success');
-        setDeletingEmployee(null);
-        fetchData();
-    } catch (e) {
-        showNotification('Delete failed', 'error');
-    }
-  };
-
   const openModal = (employee?: Employee) => {
     setEditingEmployee(employee || null);
     setFormData(employee || {
@@ -171,8 +154,6 @@ export const Employees: React.FC = () => {
                 )}
             ]}
             onEdit={openModal}
-            onDelete={setDeletingEmployee}
-            onView={setViewingEmployee}
             searchPlaceholder="Search employees..."
         />
 
@@ -251,42 +232,6 @@ export const Employees: React.FC = () => {
                 </div>
             </div>
         </Modal>
-
-        {/* View Modal */}
-        <Modal isOpen={!!viewingEmployee} onClose={() => setViewingEmployee(null)} title="Employee Details">
-            {viewingEmployee && (
-                <div className="space-y-6">
-                    <div className="flex items-center gap-4 mb-2">
-                        <div className="w-16 h-16 bg-[#F5F3FF] rounded-full flex items-center justify-center text-[#8B5CF6] text-2xl font-bold border border-violet-100">
-                            {viewingEmployee.employee_name.charAt(0)}
-                        </div>
-                        <div>
-                            <h3 className="text-xl font-bold text-slate-700">{viewingEmployee.employee_name}</h3>
-                            <p className="text-slate-500">{viewingEmployee.position}</p>
-                            <p className="text-sm text-[#8B5CF6] font-medium">{viewingEmployee.email}</p>
-                        </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-6 border-t border-slate-100 pt-6">
-                        <div><p className="text-xs font-bold text-slate-400 uppercase tracking-wide">Department</p><p className="font-medium text-slate-800 mt-1">{viewingEmployee.department_name || getDepartmentName(viewingEmployee.department_id)}</p></div>
-                        <div><p className="text-xs font-bold text-slate-400 uppercase tracking-wide">Status</p><p className="font-medium text-slate-800 mt-1">{viewingEmployee.employee_status}</p></div>
-                        <div><p className="text-xs font-bold text-slate-400 uppercase tracking-wide">Phone</p><p className="font-medium text-slate-800 mt-1">{viewingEmployee.phone || '-'}</p></div>
-                        <div><p className="text-xs font-bold text-slate-400 uppercase tracking-wide">Salary</p><p className="font-medium text-slate-800 mt-1">PKR {viewingEmployee.salary.toLocaleString()}</p></div>
-                        <div><p className="text-xs font-bold text-slate-400 uppercase tracking-wide">Hire Date</p><p className="font-medium text-slate-800 mt-1">{viewingEmployee.hire_date}</p></div>
-                    </div>
-                    <div className="mt-8 flex justify-end">
-                        <button onClick={() => setViewingEmployee(null)} className="px-6 py-2.5 bg-slate-100 rounded-xl hover:bg-slate-200 font-medium text-slate-700">Close</button>
-                    </div>
-                </div>
-            )}
-        </Modal>
-
-        <ConfirmDialog
-            isOpen={!!deletingEmployee}
-            title="Delete Employee"
-            message={`Are you sure you want to delete ${deletingEmployee?.employee_name}?`}
-            onConfirm={handleDelete}
-            onCancel={() => setDeletingEmployee(null)}
-        />
     </Layout>
   );
 };
