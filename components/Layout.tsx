@@ -118,9 +118,9 @@ export const Layout: React.FC<LayoutProps> = ({ children, title }) => {
 
           <div className="flex items-center gap-3 sm:gap-6">
             <div className="flex items-center gap-3 group cursor-pointer p-1 rounded-full hover:bg-slate-50 transition-colors duration-300">
-              <div className="text-right hidden sm:block">
-                <p className="text-sm font-bold text-slate-700">Raza Ali</p>
-                <p className="text-xs text-[#8B5CF6] font-medium">IU04-0324-0201</p>
+              <div className="text-right">
+                <p className="text-xs sm:text-sm font-bold text-slate-700">Raza Ali</p>
+                <p className="text-[10px] sm:text-xs text-[#8B5CF6] font-medium">IU04-0324-0201</p>
               </div>
               <div className="w-10 h-10 rounded-full bg-[#F5F3FF] text-[#8B5CF6] flex items-center justify-center border border-violet-100 shadow-sm group-hover:scale-110 transition-transform duration-300">
                 <User size={20} />
