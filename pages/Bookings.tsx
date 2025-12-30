@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { Layout } from '../components/Layout';
-import { DataTable, Modal, ConfirmDialog, FormInput, FormSelect } from '../components/Shared';
+import { DataTable, Modal, FormInput, FormSelect } from '../components/Shared';
 import { Booking, BookingStatus, Customer, Room, RoomStatus } from '../types';
 import { api } from '../services/api';
 import { useNotification } from '../context/NotificationContext';
@@ -13,7 +13,6 @@ export const Bookings: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingBooking, setEditingBooking] = useState<Booking | null>(null);
-  const [deletingBooking, setDeletingBooking] = useState<Booking | null>(null);
   const { showNotification } = useNotification();
 
   // Filters
@@ -159,21 +158,6 @@ export const Bookings: React.FC = () => {
     }
   };
 
-  const handleDelete = async () => {
-    if (!deletingBooking || !deletingBooking.booking_id) {
-        showNotification('Error: Invalid Booking ID', 'error');
-        return;
-    }
-    try {
-      await api.delete(`http://192.168.43.54:5000/api/bookings/${deletingBooking.booking_id}`);
-      showNotification('Booking deleted', 'success');
-      setDeletingBooking(null);
-      fetchData();
-    } catch (error) {
-       showNotification('Delete failed', 'error');
-    }
-  };
-
   const handleCancelBooking = async (booking: Booking) => {
     try {
         if (booking.booking_id) {
@@ -312,7 +296,6 @@ export const Bookings: React.FC = () => {
           }
         ]}
         onEdit={openModal}
-        onDelete={setDeletingBooking}
         renderActions={(row) => (
             row.booking_status !== BookingStatus.CANCELLED && row.booking_status !== BookingStatus.COMPLETED ? (
                 <button 
@@ -397,14 +380,6 @@ export const Bookings: React.FC = () => {
             </div>
         </div>
       </Modal>
-
-      <ConfirmDialog
-        isOpen={!!deletingBooking}
-        title="Delete Booking"
-        message={`Delete booking #${deletingBooking?.booking_id}?`}
-        onConfirm={handleDelete}
-        onCancel={() => setDeletingBooking(null)}
-      />
     </Layout>
   );
 };

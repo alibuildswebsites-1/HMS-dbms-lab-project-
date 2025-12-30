@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { Layout } from '../components/Layout';
-import { DataTable, Modal, ConfirmDialog, FormInput } from '../components/Shared';
+import { DataTable, Modal, FormInput } from '../components/Shared';
 import { Customer } from '../types';
 import { api } from '../services/api';
 import { useNotification } from '../context/NotificationContext';
@@ -12,7 +12,6 @@ export const Customers: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null);
   const [viewingCustomer, setViewingCustomer] = useState<Customer | null>(null);
-  const [deletingCustomer, setDeletingCustomer] = useState<Customer | null>(null);
   const { showNotification } = useNotification();
 
   // Filters State
@@ -116,21 +115,6 @@ export const Customers: React.FC = () => {
     }
   };
 
-  const handleDelete = async () => {
-    if (!deletingCustomer || !deletingCustomer.customer_id) {
-        showNotification('Error: Invalid Customer ID', 'error');
-        return;
-    }
-    try {
-      await api.delete(`http://192.168.43.54:5000/api/customers/${deletingCustomer.customer_id}`);
-      showNotification('Customer deleted successfully', 'success');
-      setDeletingCustomer(null);
-      fetchCustomers();
-    } catch (error) {
-      showNotification('Delete failed', 'error');
-    }
-  };
-
   const openModal = (customer?: Customer) => {
     setEditingCustomer(customer || null);
     setFormData(customer || {
@@ -221,7 +205,6 @@ export const Customers: React.FC = () => {
           { header: 'CNIC', accessor: 'id' },
         ]}
         onEdit={(item) => openModal(item)}
-        onDelete={(item) => setDeletingCustomer(item)}
         onView={(item) => setViewingCustomer(item)}
       />
 
@@ -306,15 +289,6 @@ export const Customers: React.FC = () => {
           </div>
         )}
       </Modal>
-
-      {/* Delete Confirmation */}
-      <ConfirmDialog
-        isOpen={!!deletingCustomer}
-        title="Delete Customer"
-        message={`Are you sure you want to delete ${deletingCustomer?.customer_name}? This action cannot be undone.`}
-        onConfirm={handleDelete}
-        onCancel={() => setDeletingCustomer(null)}
-      />
     </Layout>
   );
 };

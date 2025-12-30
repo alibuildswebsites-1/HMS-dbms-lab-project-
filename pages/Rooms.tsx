@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { Layout } from '../components/Layout';
-import { DataTable, Modal, ConfirmDialog, FormInput, FormSelect } from '../components/Shared';
+import { DataTable, Modal, FormInput, FormSelect } from '../components/Shared';
 import { Room, RoomType, RoomStatus } from '../types';
 import { api } from '../services/api';
 import { useNotification } from '../context/NotificationContext';
@@ -11,7 +11,6 @@ export const Rooms: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingRoom, setEditingRoom] = useState<Room | null>(null);
-  const [deletingRoom, setDeletingRoom] = useState<Room | null>(null);
   const { showNotification } = useNotification();
 
   // Filters State
@@ -98,21 +97,6 @@ export const Rooms: React.FC = () => {
       fetchRooms();
     } catch (error) {
       showNotification('Operation failed', 'error');
-    }
-  };
-
-  const handleDelete = async () => {
-    if (!deletingRoom || !deletingRoom.room_id) {
-        showNotification('Error: Invalid Room ID', 'error');
-        return;
-    }
-    try {
-      await api.delete(`http://192.168.43.54:5000/api/rooms/${deletingRoom.room_id}`);
-      showNotification('Room deleted', 'success');
-      setDeletingRoom(null);
-      fetchRooms();
-    } catch (error) {
-      showNotification('Delete failed', 'error');
     }
   };
 
@@ -233,7 +217,6 @@ export const Rooms: React.FC = () => {
           }
         ]}
         onEdit={openModal}
-        onDelete={setDeletingRoom}
         searchPlaceholder="Quick filter..."
       />
 
@@ -287,14 +270,6 @@ export const Rooms: React.FC = () => {
           </div>
         </div>
       </Modal>
-
-      <ConfirmDialog
-        isOpen={!!deletingRoom}
-        title="Delete Room"
-        message={`Delete Room ${deletingRoom?.room_number}?`}
-        onConfirm={handleDelete}
-        onCancel={() => setDeletingRoom(null)}
-      />
     </Layout>
   );
 };
