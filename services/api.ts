@@ -2,7 +2,16 @@ export const api = {
   get: async <T>(url: string): Promise<T> => {
     try {
       const response = await fetch(url);
-      if (!response.ok) throw new Error(`Error: ${response.statusText} (${response.status})`);
+      if (!response.ok) {
+        const text = await response.text();
+        try {
+          const json = JSON.parse(text);
+          throw new Error(json.message || json.error || `Error: ${response.statusText} (${response.status})`);
+        } catch (e) {
+          if (e instanceof Error && e.message.startsWith('Error:')) throw e;
+          throw new Error(text || `Error: ${response.statusText} (${response.status})`);
+        }
+      }
       return await response.json();
     } catch (error) {
       console.error(`GET ${url} failed:`, error);
@@ -17,7 +26,16 @@ export const api = {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
       });
-      if (!response.ok) throw new Error(`Error: ${response.statusText} (${response.status})`);
+      if (!response.ok) {
+        const text = await response.text();
+        try {
+          const json = JSON.parse(text);
+          throw new Error(json.message || json.error || `Error: ${response.statusText} (${response.status})`);
+        } catch (e) {
+          if (e instanceof Error && e.message.startsWith('Error:')) throw e;
+          throw new Error(text || `Error: ${response.statusText} (${response.status})`);
+        }
+      }
       return await response.json();
     } catch (error) {
       console.error(`POST ${url} failed:`, error);
@@ -32,7 +50,16 @@ export const api = {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
       });
-      if (!response.ok) throw new Error(`Error: ${response.statusText} (${response.status})`);
+      if (!response.ok) {
+        const text = await response.text();
+        try {
+          const json = JSON.parse(text);
+          throw new Error(json.message || json.error || `Error: ${response.statusText} (${response.status})`);
+        } catch (e) {
+          if (e instanceof Error && e.message.startsWith('Error:')) throw e;
+          throw new Error(text || `Error: ${response.statusText} (${response.status})`);
+        }
+      }
       return await response.json();
     } catch (error) {
       console.error(`PUT ${url} failed:`, error);
@@ -45,7 +72,16 @@ export const api = {
       const response = await fetch(url, {
         method: 'DELETE',
       });
-      if (!response.ok) throw new Error(`Error: ${response.statusText} (${response.status})`);
+      if (!response.ok) {
+        const text = await response.text();
+        try {
+          const json = JSON.parse(text);
+          throw new Error(json.message || json.error || `Error: ${response.statusText} (${response.status})`);
+        } catch (e) {
+          if (e instanceof Error && e.message.startsWith('Error:')) throw e;
+          throw new Error(text || `Error: ${response.statusText} (${response.status})`);
+        }
+      }
     } catch (error) {
       console.error(`DELETE ${url} failed:`, error);
       throw error;

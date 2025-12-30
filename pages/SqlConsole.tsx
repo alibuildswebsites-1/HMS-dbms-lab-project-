@@ -8,14 +8,6 @@ interface QueryResult {
   [key: string]: any;
 }
 
-interface SqlApiResponse {
-  success: boolean;
-  rowCount: number;
-  data: QueryResult[];
-  executionTime: string;
-  message?: string;
-}
-
 export const SqlConsole: React.FC = () => {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<QueryResult[] | null>(null);
@@ -45,28 +37,41 @@ export const SqlConsole: React.FC = () => {
     const startTime = performance.now();
 
     try {
-      // Using the specific IP requested for the SQL console
-      const response = await api.post<SqlApiResponse>('http://192.168.100.14:5000/api/execute-query', { query });
+      // Corrected IP address to match the rest of the application
+      const response = await api.post<any>('http://192.168.43.171:5000/api/execute-query', { query });
       
       const endTime = performance.now();
       setExecutionTime(Math.round(endTime - startTime));
       
-      if (response.success) {
-        setResults(response.data);
-        
-        // Update history
-        setHistory(prev => {
-          const newHistory = [query, ...prev.filter(q => q !== query)];
-          return newHistory.slice(0, 5);
-        });
+      let rows: QueryResult[] = [];
 
-        showNotification(`Query executed successfully (${response.rowCount} rows)`, "success");
-      } else {
-        throw new Error(response.message || "Query execution failed.");
+      // Flexible response parsing: handle raw array or { data: [...] } or { success: true, data: [...] }
+      if (Array.isArray(response)) {
+        rows = response;
+      } else if (response.data && Array.isArray(response.data)) {
+        rows = response.data;
+      } else if (response.results && Array.isArray(response.results)) {
+        rows = response.results;
+      } else if (response.rows && Array.isArray(response.rows)) {
+        rows = response.rows;
+      } else if (typeof response === 'object') {
+        // If it returns a single object that isn't wrapped
+        rows = [response];
       }
+
+      setResults(rows);
+      
+      // Update history
+      setHistory(prev => {
+        const newHistory = [query, ...prev.filter(q => q !== query)];
+        return newHistory.slice(0, 5);
+      });
+
+      showNotification(`Query executed successfully (${rows.length} rows)`, "success");
 
     } catch (err: any) {
       console.error(err);
+      // The error message now comes from api.ts parsing the backend response
       setError(err.message || "An error occurred while executing the query");
       showNotification("Query execution failed", "error");
     } finally {
@@ -146,7 +151,7 @@ export const SqlConsole: React.FC = () => {
                 {error ? (
                   <div className="bg-[#FCE8E6] border border-[#E07A5F] rounded-2xl p-6 text-[#8C1D18] flex items-start gap-4 shadow-sm">
                     <AlertTriangle className="shrink-0 mt-1" size={24} />
-                    <div className="font-mono text-sm whitespace-pre-wrap break-all">
+                    <div className="font-mono text-sm whitespace-pre-wrap break-all w-full">
                       <p className="font-bold mb-1">Execution Error:</p>
                       {error}
                     </div>
@@ -179,7 +184,7 @@ export const SqlConsole: React.FC = () => {
                               <tr key={i} className="hover:bg-[#F3F6F4] transition-colors">
                                 {Object.values(row).map((val: any, j) => (
                                   <td key={j} className="px-6 py-3 font-mono text-xs text-gray-700">
-                                    {val === null ? <span className="text-gray-400 italic">null</span> : String(val)}
+                                    {val === null ? <span className="text-gray-400 italic">null</span> : (typeof val === 'object' ? JSON.stringify(val) : String(val))}
                                   </td>
                                 ))}
                               </tr>
