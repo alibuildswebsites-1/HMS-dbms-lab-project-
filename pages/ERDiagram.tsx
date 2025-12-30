@@ -12,7 +12,7 @@ import ReactFlow, {
   NodeProps,
   BackgroundVariant
 } from 'reactflow';
-import 'reactflow/dist/style.css';
+// import 'reactflow/dist/style.css'; // REMOVED: Loaded via index.html to prevent import errors
 import { Layout } from '../components/Layout';
 import { Info } from 'lucide-react';
 
