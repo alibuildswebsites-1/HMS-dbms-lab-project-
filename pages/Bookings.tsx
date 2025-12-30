@@ -48,7 +48,8 @@ export const Bookings: React.FC = () => {
         api.get<Customer[]>('http://192.168.100.14:5000/api/customers'),
         api.get<Room[]>('http://192.168.100.14:5000/api/rooms')
       ]);
-      setBookings(bookingsData);
+      // Sort bookings by booking_id ascending
+      setBookings(bookingsData.sort((a, b) => (a.booking_id || 0) - (b.booking_id || 0)));
       setCustomers(customersData);
       setRooms(roomsData);
     } catch (error) {

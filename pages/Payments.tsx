@@ -23,7 +23,8 @@ export const Payments: React.FC = () => {
             api.get<Payment[]>('http://192.168.100.14:5000/api/payments'),
             api.get<Booking[]>('http://192.168.100.14:5000/api/bookings')
         ]);
-        setPayments(payData);
+        // Sort payments by payment_id ascending
+        setPayments(payData.sort((a, b) => (a.payment_id || 0) - (b.payment_id || 0)));
         setBookings(bookData);
     } catch (e) {
         showNotification('Failed to fetch data', 'error');

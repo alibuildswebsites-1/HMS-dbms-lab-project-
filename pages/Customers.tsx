@@ -23,7 +23,8 @@ export const Customers: React.FC = () => {
     setIsLoading(true);
     try {
       const data = await api.get<Customer[]>('http://192.168.100.14:5000/api/customers');
-      setCustomers(data);
+      // Sort by customer_id ascending
+      setCustomers(data.sort((a, b) => (a.customer_id || 0) - (b.customer_id || 0)));
     } catch (error) {
       showNotification('Failed to fetch customers', 'error');
       setCustomers([]);

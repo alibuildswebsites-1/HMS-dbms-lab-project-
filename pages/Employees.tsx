@@ -28,7 +28,8 @@ export const Employees: React.FC = () => {
             api.get<Employee[]>('http://192.168.100.14:5000/api/employees'),
             api.get<Department[]>('http://192.168.100.14:5000/api/departments')
         ]);
-        setEmployees(empData);
+        // Sort employees by employee_id ascending
+        setEmployees(empData.sort((a, b) => (a.employee_id || 0) - (b.employee_id || 0)));
         setDepartments(deptData);
     } catch (e) {
         showNotification('Failed to fetch data', 'error');

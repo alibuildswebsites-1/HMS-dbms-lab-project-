@@ -21,7 +21,8 @@ export const Rooms: React.FC = () => {
     setIsLoading(true);
     try {
       const data = await api.get<Room[]>('http://192.168.100.14:5000/api/rooms');
-      setRooms(data);
+      // Sort by room_number using numeric sort (handles "10", "2" correctly)
+      setRooms(data.sort((a, b) => a.room_number.localeCompare(b.room_number, undefined, { numeric: true })));
     } catch (error) {
       showNotification('Failed to fetch rooms', 'error');
       setRooms([]);
@@ -82,25 +83,6 @@ export const Rooms: React.FC = () => {
     }
   };
 
-  const handleStatusUpdate = async (room: Room, status: string) => {
-    try {
-      if (room.room_id) {
-        const payload = {
-           Room_Number: room.room_number,
-           Room_Type: room.room_type,
-           Floor_Number: room.floor_number,
-           Price_Per_Night: room.price_per_night,
-           Room_Status: status
-        };
-        await api.put(`http://192.168.100.14:5000/api/rooms/${room.room_id}`, payload);
-        showNotification(`Status updated to ${status}`, 'success');
-        fetchRooms();
-      }
-    } catch (error) {
-      showNotification('Failed to update status', 'error');
-    }
-  };
-
   const openModal = (room?: Room) => {
     setEditingRoom(room || null);
     setFormData(room || {
@@ -112,16 +94,6 @@ export const Rooms: React.FC = () => {
     });
     setErrors({});
     setIsModalOpen(true);
-  };
-
-  const getStatusColor = (status: RoomStatus) => {
-    switch (status) {
-      case RoomStatus.AVAILABLE: return 'bg-green-100 text-green-800';
-      case RoomStatus.OCCUPIED: return 'bg-red-100 text-red-800';
-      case RoomStatus.RESERVED: return 'bg-yellow-100 text-yellow-800';
-      case RoomStatus.MAINTENANCE: return 'bg-gray-100 text-gray-800';
-      default: return 'bg-gray-100';
-    }
   };
 
   return (
@@ -140,70 +112,67 @@ export const Rooms: React.FC = () => {
         data={rooms}
         isLoading={isLoading}
         columns={[
-          { header: 'Room #', accessor: 'room_number' },
+          { header: 'Room #', accessor: 'room_number', className: 'w-24 font-bold' },
           { header: 'Type', accessor: 'room_type' },
           { header: 'Floor', accessor: 'floor_number' },
+          { header: 'Price (PKR)', accessor: (row) => row.price_per_night.toLocaleString() },
           { 
-            header: 'Price (PKR)', 
-            accessor: (row) => row.price_per_night.toLocaleString() 
-          },
-          {
-            header: 'Status',
+            header: 'Status', 
             accessor: (row) => (
-              <span className={`px-2 py-1 rounded-full text-xs font-semibold ${getStatusColor(row.room_status)}`}>
+              <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                row.room_status === RoomStatus.AVAILABLE ? 'bg-green-100 text-green-800' :
+                row.room_status === RoomStatus.OCCUPIED ? 'bg-red-100 text-red-800' :
+                row.room_status === RoomStatus.RESERVED ? 'bg-yellow-100 text-yellow-800' :
+                'bg-gray-100 text-gray-800'
+              }`}>
                 {row.room_status}
               </span>
-            )
+            ) 
           }
         ]}
         onEdit={openModal}
         onDelete={setDeletingRoom}
-        renderActions={(row) => (
-          <select
-            className="text-xs border-gray-300 rounded mr-2"
-            value={row.room_status}
-            onChange={(e) => handleStatusUpdate(row, e.target.value)}
-          >
-            {Object.values(RoomStatus).map(s => <option key={s} value={s}>{s}</option>)}
-          </select>
-        )}
         searchPlaceholder="Search rooms..."
       />
 
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={editingRoom ? 'Edit Room' : 'Add New Room'}>
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={editingRoom ? 'Edit Room' : 'Add Room'}>
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
-            <FormInput
-              label="Room Number"
-              value={formData.room_number || ''}
-              onChange={(e) => setFormData({ ...formData, room_number: e.target.value })}
+            <FormInput 
+              label="Room Number" 
+              value={formData.room_number || ''} 
+              onChange={(e) => setFormData({...formData, room_number: e.target.value})}
               error={errors.room_number}
             />
-            <FormInput
-              label="Floor Number"
+            <FormInput 
+              label="Floor Number" 
               type="number"
-              value={formData.floor_number || ''}
-              onChange={(e) => setFormData({ ...formData, floor_number: parseInt(e.target.value) })}
+              value={formData.floor_number} 
+              onChange={(e) => setFormData({...formData, floor_number: parseInt(e.target.value)})}
             />
           </div>
-          <FormSelect
-            label="Room Type"
-            value={formData.room_type}
-            onChange={(e) => setFormData({ ...formData, room_type: e.target.value as RoomType })}
-          >
-            {Object.values(RoomType).map(t => <option key={t} value={t}>{t}</option>)}
-          </FormSelect>
-          <FormInput
-            label="Price Per Night (PKR)"
-            type="number"
-            value={formData.price_per_night || ''}
-            onChange={(e) => setFormData({ ...formData, price_per_night: parseInt(e.target.value) })}
-            error={errors.price_per_night}
-          />
-          <FormSelect
-            label="Status"
-            value={formData.room_status}
-            onChange={(e) => setFormData({ ...formData, room_status: e.target.value as RoomStatus })}
+          
+          <div className="grid grid-cols-2 gap-4">
+             <FormSelect 
+                label="Room Type" 
+                value={formData.room_type} 
+                onChange={(e) => setFormData({...formData, room_type: e.target.value as RoomType})}
+              >
+                {Object.values(RoomType).map(t => <option key={t} value={t}>{t}</option>)}
+             </FormSelect>
+             <FormInput 
+                label="Price Per Night" 
+                type="number"
+                value={formData.price_per_night} 
+                onChange={(e) => setFormData({...formData, price_per_night: parseInt(e.target.value)})}
+                error={errors.price_per_night}
+              />
+          </div>
+
+          <FormSelect 
+            label="Status" 
+            value={formData.room_status} 
+            onChange={(e) => setFormData({...formData, room_status: e.target.value as RoomStatus})}
           >
             {Object.values(RoomStatus).map(s => <option key={s} value={s}>{s}</option>)}
           </FormSelect>
@@ -211,7 +180,7 @@ export const Rooms: React.FC = () => {
           <div className="flex justify-end gap-3 mt-6">
             <button onClick={() => setIsModalOpen(false)} className="px-4 py-2 border rounded-lg hover:bg-gray-50">Cancel</button>
             <button onClick={handleSubmit} className="px-4 py-2 bg-[#01411C] text-white rounded-lg hover:bg-green-900">
-              {editingRoom ? 'Update Room' : 'Create Room'}
+              {editingRoom ? 'Update Room' : 'Save Room'}
             </button>
           </div>
         </div>
@@ -220,7 +189,7 @@ export const Rooms: React.FC = () => {
       <ConfirmDialog
         isOpen={!!deletingRoom}
         title="Delete Room"
-        message={`Delete room ${deletingRoom?.room_number}?`}
+        message={`Delete Room ${deletingRoom?.room_number}?`}
         onConfirm={handleDelete}
         onCancel={() => setDeletingRoom(null)}
       />
