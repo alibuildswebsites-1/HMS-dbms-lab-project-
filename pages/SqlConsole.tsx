@@ -20,9 +20,9 @@ export const SqlConsole: React.FC = () => {
   const examples = [
     "SELECT * FROM Customers",
     "SELECT * FROM Room WHERE room_status = 'Available'",
-    "SELECT customer_name, email FROM Customers WHERE nationality = 'Pakistani'",
-    "SELECT * FROM Booking ORDER BY check_in_date DESC LIMIT 10",
-    "SELECT COUNT(*) as total_bookings FROM Booking"
+    "INSERT INTO Customers (Customer_Name, Email, Phone, Address, Nationality, ID) VALUES ('Test User', 'test@example.com', '03001234567', 'Lahore', 'Pakistani', '42000-0000000-0')",
+    "UPDATE Room SET Price_Per_Night = Price_Per_Night + 500 WHERE Room_Type = 'Deluxe'",
+    "DELETE FROM Booking WHERE Booking_Status = 'Cancelled'"
   ];
 
   const handleExecute = async () => {
@@ -55,7 +55,7 @@ export const SqlConsole: React.FC = () => {
       } else if (response.rows && Array.isArray(response.rows)) {
         rows = response.rows;
       } else if (typeof response === 'object') {
-        // If it returns a single object that isn't wrapped
+        // If it returns a single object that isn't wrapped (e.g. OKPacket for INSERT/UPDATE)
         rows = [response];
       }
 
@@ -67,7 +67,13 @@ export const SqlConsole: React.FC = () => {
         return newHistory.slice(0, 5);
       });
 
-      showNotification(`Query executed successfully (${rows.length} rows)`, "success");
+      // Better notification feedback
+      const affectedRows = (response as any).affectedRows;
+      if (affectedRows !== undefined) {
+         showNotification(`Query executed. Affected Rows: ${affectedRows}`, "success");
+      } else {
+         showNotification(`Query executed successfully (${rows.length} rows)`, "success");
+      }
 
     } catch (err: any) {
       console.error(err);
@@ -100,7 +106,7 @@ export const SqlConsole: React.FC = () => {
               <Terminal size={24} className="text-[#FFFBEB]" />
               Query Executor
             </h2>
-            <p className="text-white/90 mt-1 opacity-90">Execute raw SQL commands directly against the database.</p>
+            <p className="text-white/90 mt-1 opacity-90">Execute raw SQL commands (SELECT, INSERT, UPDATE, DELETE) directly against the database.</p>
           </div>
         </div>
 
@@ -125,7 +131,7 @@ export const SqlConsole: React.FC = () => {
               <textarea
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Enter your SELECT query here... Example: SELECT * FROM Customers"
+                placeholder="Enter your SQL query here...&#10;Examples:&#10;SELECT * FROM Customers&#10;INSERT INTO Customers (...) VALUES (...)&#10;UPDATE Room SET ...&#10;DELETE FROM Booking WHERE ..."
                 className="w-full h-64 p-4 bg-[#1e293b] text-violet-300 font-mono text-sm focus:outline-none resize-y"
                 spellCheck={false}
               />
