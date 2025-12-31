@@ -29,7 +29,7 @@ export const Payments: React.FC = () => {
             payment_id: p.Payment_ID || p.payment_id,
             booking_id: p.Booking_ID || p.booking_id,
             customer_name: p.Customer_Name || p.customer_name,
-            amount: p.Amount || p.amount,
+            amount: parseFloat(p.Amount || p.amount || 0), // Ensure this is a number
             payment_date: p.Payment_Date || p.payment_date,
             payment_status: p.Payment_Status || p.payment_status
         }));
@@ -74,7 +74,7 @@ export const Payments: React.FC = () => {
   const handleSubmit = async () => {
      const payload = {
          Booking_ID: formData.booking_id,
-         Amount: formData.amount,
+         Amount: Number(formData.amount),
          Payment_Date: formData.payment_date,
          Payment_Status: formData.payment_status
      };
@@ -107,7 +107,7 @@ export const Payments: React.FC = () => {
   // Case-insensitive check for completed status
   const totalRevenue = payments
     .filter(p => p.payment_status?.toLowerCase() === 'completed')
-    .reduce((sum, p) => sum + p.amount, 0);
+    .reduce((sum, p) => sum + (Number(p.amount) || 0), 0);
 
   const getCustomerNameForPayment = (bookingId: number) => {
       const booking = bookings.find(b => b.booking_id === bookingId);
@@ -150,7 +150,7 @@ export const Payments: React.FC = () => {
              { header: 'ID', accessor: 'payment_id', className: 'w-16' },
              { header: 'Booking ID', accessor: 'booking_id' },
              { header: 'Customer', accessor: (row) => row.customer_name || getCustomerNameForPayment(row.booking_id) },
-             { header: 'Amount (PKR)', accessor: (row) => row.amount?.toLocaleString() },
+             { header: 'Amount (PKR)', accessor: (row) => Number(row.amount)?.toLocaleString() },
              { header: 'Date', accessor: (row) => formatDate(row.payment_date) },
              { header: 'Status', accessor: (row) => {
                  const status = row.payment_status?.toLowerCase() || '';
@@ -186,7 +186,7 @@ export const Payments: React.FC = () => {
                     label="Amount"
                     type="number"
                     value={formData.amount}
-                    onChange={(e) => setFormData({...formData, amount: parseInt(e.target.value)})}
+                    onChange={(e) => setFormData({...formData, amount: parseFloat(e.target.value) || 0})}
                 />
                 <FormInput
                     label="Date"
