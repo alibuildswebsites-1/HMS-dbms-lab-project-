@@ -1,5 +1,5 @@
 {
-  "name": "GreenLeaf Hotel Management",
+  "name": "Hotel Management System",
   "description": "A comprehensive Hotel Management System with a modern UI, utilizing Pakistan Green and Gold theme, featuring full CRUD operations for Customers, Rooms, Bookings, and Payments.",
   "requestFramePermissions": []
 }

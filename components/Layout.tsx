@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { 
   LayoutDashboard, Users, BedDouble, CalendarCheck, 
-  CreditCard, Briefcase, LogOut, User, Menu, X, Database, Terminal, Network
+  CreditCard, Briefcase, LogOut, User, Menu, X, Database, Terminal, Network, GitMerge
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
@@ -29,6 +29,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, title }) => {
     { path: '/bookings', label: 'Bookings', icon: CalendarCheck },
     { path: '/payments', label: 'Payments', icon: CreditCard },
     { path: '/employees', label: 'Employees', icon: Briefcase },
+    { path: '/joins', label: 'Join Explorer', icon: GitMerge },
     { path: '/sql-console', label: 'SQL Console', icon: Terminal },
     { path: '/er-diagram', label: 'ER Diagram', icon: Network },
   ];

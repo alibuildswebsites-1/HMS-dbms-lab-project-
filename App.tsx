@@ -14,6 +14,7 @@ import { Payments } from './pages/Payments';
 import { Employees } from './pages/Employees';
 import { SqlConsole } from './pages/SqlConsole';
 import { ERDiagram } from './pages/ERDiagram';
+import { Joins } from './pages/Joins';
 
 const ProtectedRoute = ({ children }: { children?: React.ReactNode }) => {
   const { isAuthenticated } = useAuth();
@@ -122,6 +123,7 @@ function App() {
               <Route path="/bookings" element={<ProtectedRoute><Bookings /></ProtectedRoute>} />
               <Route path="/payments" element={<ProtectedRoute><Payments /></ProtectedRoute>} />
               <Route path="/employees" element={<ProtectedRoute><Employees /></ProtectedRoute>} />
+              <Route path="/joins" element={<ProtectedRoute><Joins /></ProtectedRoute>} />
               <Route path="/sql-console" element={<ProtectedRoute><SqlConsole /></ProtectedRoute>} />
               <Route path="/er-diagram" element={<ProtectedRoute><ERDiagram /></ProtectedRoute>} />
               
