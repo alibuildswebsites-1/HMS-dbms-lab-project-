@@ -50,9 +50,9 @@ export const Bookings: React.FC = () => {
     setIsLoading(true);
     try {
       const [bookingsRaw, customersRaw, roomsRaw] = await Promise.all([
-        api.get<any[]>('http://192.168.43.54:5000/api/bookings'),
-        api.get<any[]>('http://192.168.43.54:5000/api/customers'),
-        api.get<any[]>('http://192.168.43.54:5000/api/rooms')
+        api.get<any[]>('http://192.168.40.190:5000/api/bookings'),
+        api.get<any[]>('http://192.168.40.190:5000/api/customers'),
+        api.get<any[]>('http://192.168.40.190:5000/api/rooms')
       ]);
 
       const mappedBookings: Booking[] = bookingsRaw.map(b => ({
@@ -145,10 +145,10 @@ export const Bookings: React.FC = () => {
 
     try {
       if (editingBooking && editingBooking.booking_id) {
-        await api.put(`http://192.168.43.54:5000/api/bookings/${editingBooking.booking_id}`, payload);
+        await api.put(`http://192.168.40.190:5000/api/bookings/${editingBooking.booking_id}`, payload);
         showNotification('Booking updated', 'success');
       } else {
-        await api.post('http://192.168.43.54:5000/api/bookings', payload);
+        await api.post('http://192.168.40.190:5000/api/bookings', payload);
         showNotification('Booking created', 'success');
       }
       setIsModalOpen(false);
@@ -171,7 +171,7 @@ export const Bookings: React.FC = () => {
               Total_Amount: booking.total_amount,
               Booking_Status: BookingStatus.CANCELLED
           };
-          await api.put(`http://192.168.43.54:5000/api/bookings/${booking.booking_id}`, payload);
+          await api.put(`http://192.168.40.190:5000/api/bookings/${booking.booking_id}`, payload);
           showNotification('Booking cancelled', 'success');
           fetchData();
         }

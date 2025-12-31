@@ -26,7 +26,7 @@ export const Customers: React.FC = () => {
   const fetchCustomers = async () => {
     setIsLoading(true);
     try {
-      const data = await api.get<any[]>('http://192.168.43.54:5000/api/customers');
+      const data = await api.get<any[]>('http://192.168.40.190:5000/api/customers');
       // Map PascalCase from API to snake_case for frontend
       const mappedData: Customer[] = data.map(item => ({
         customer_id: item.Customer_ID || item.customer_id,
@@ -102,10 +102,10 @@ export const Customers: React.FC = () => {
 
     try {
       if (editingCustomer && editingCustomer.customer_id) {
-        await api.put(`http://192.168.43.54:5000/api/customers/${editingCustomer.customer_id}`, payload);
+        await api.put(`http://192.168.40.190:5000/api/customers/${editingCustomer.customer_id}`, payload);
         showNotification('Customer updated successfully', 'success');
       } else {
-        await api.post('http://192.168.43.54:5000/api/customers', payload);
+        await api.post('http://192.168.40.190:5000/api/customers', payload);
         showNotification('Customer added successfully', 'success');
       }
       setIsModalOpen(false);

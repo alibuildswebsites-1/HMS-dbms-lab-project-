@@ -26,7 +26,7 @@ export const Rooms: React.FC = () => {
   const fetchRooms = async () => {
     setIsLoading(true);
     try {
-      const data = await api.get<any[]>('http://192.168.43.54:5000/api/rooms');
+      const data = await api.get<any[]>('http://192.168.40.190:5000/api/rooms');
       const mappedData: Room[] = data.map(item => ({
         room_id: item.Room_ID || item.room_id,
         room_number: item.Room_Number || item.room_number,
@@ -87,10 +87,10 @@ export const Rooms: React.FC = () => {
 
     try {
       if (editingRoom && editingRoom.room_id) {
-        await api.put(`http://192.168.43.54:5000/api/rooms/${editingRoom.room_id}`, payload);
+        await api.put(`http://192.168.40.190:5000/api/rooms/${editingRoom.room_id}`, payload);
         showNotification('Room updated', 'success');
       } else {
-        await api.post('http://192.168.43.54:5000/api/rooms', payload);
+        await api.post('http://192.168.40.190:5000/api/rooms', payload);
         showNotification('Room created', 'success');
       }
       setIsModalOpen(false);

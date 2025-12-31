@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Layout } from '../components/Layout';
 import { DataTable, Modal, FormInput, FormSelect } from '../components/Shared';
-import { Payment, PaymentStatus, Booking } from '../types';
+import { Payment, PaymentStatus, Booking, Customer } from '../types';
 import { api } from '../services/api';
 import { useNotification } from '../context/NotificationContext';
 import { Plus } from 'lucide-react';
@@ -9,6 +9,7 @@ import { Plus } from 'lucide-react';
 export const Payments: React.FC = () => {
   const [payments, setPayments] = useState<Payment[]>([]);
   const [bookings, setBookings] = useState<Booking[]>([]);
+  const [customers, setCustomers] = useState<Customer[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingPayment, setEditingPayment] = useState<Payment | null>(null);
@@ -18,9 +19,10 @@ export const Payments: React.FC = () => {
   const fetchData = async () => {
     setIsLoading(true);
     try {
-        const [payRaw, bookRaw] = await Promise.all([
-            api.get<any[]>('http://192.168.43.54:5000/api/payments'),
-            api.get<any[]>('http://192.168.43.54:5000/api/bookings')
+        const [payRaw, bookRaw, custRaw] = await Promise.all([
+            api.get<any[]>('http://192.168.40.190:5000/api/payments'),
+            api.get<any[]>('http://192.168.40.190:5000/api/bookings'),
+            api.get<any[]>('http://192.168.40.190:5000/api/customers')
         ]);
 
         const mappedPayments: Payment[] = payRaw.map(p => ({
@@ -32,13 +34,11 @@ export const Payments: React.FC = () => {
             payment_status: p.Payment_Status || p.payment_status
         }));
         
-        // We only need basic booking info for the dropdown
         const mappedBookings: Booking[] = bookRaw.map(b => ({
             booking_id: b.Booking_ID || b.booking_id,
             customer_id: b.Customer_ID || b.customer_id,
             room_id: b.Room_ID || b.room_id,
             customer_name: b.Customer_Name || b.customer_name,
-            // ... other fields not critical for payment dropdown
             booking_status: b.Booking_Status || b.booking_status,
             check_in_date: b.Check_In_Date || b.check_in_date,
             check_out_date: b.Check_Out_Date || b.check_out_date,
@@ -46,12 +46,24 @@ export const Payments: React.FC = () => {
             total_amount: b.Total_Amount || b.total_amount,
         } as Booking));
 
+        const mappedCustomers: Customer[] = custRaw.map(c => ({
+            customer_id: c.Customer_ID || c.customer_id,
+            customer_name: c.Customer_Name || c.customer_name,
+            email: c.Email || c.email,
+            phone: c.Phone || c.phone,
+            address: c.Address || c.address,
+            nationality: c.Nationality || c.nationality,
+            id: c.ID || c.id || c.CNIC
+        }));
+
         setPayments(mappedPayments.sort((a, b) => (a.payment_id || 0) - (b.payment_id || 0)));
         setBookings(mappedBookings);
+        setCustomers(mappedCustomers);
     } catch (e) {
         showNotification('Failed to fetch data', 'error');
         setPayments([]);
         setBookings([]);
+        setCustomers([]);
     } finally {
         setIsLoading(false);
     }
@@ -60,7 +72,6 @@ export const Payments: React.FC = () => {
   useEffect(() => { fetchData(); }, []);
 
   const handleSubmit = async () => {
-     // Map to PascalCase
      const payload = {
          Booking_ID: formData.booking_id,
          Amount: formData.amount,
@@ -70,10 +81,10 @@ export const Payments: React.FC = () => {
 
      try {
         if(editingPayment && editingPayment.payment_id) {
-            await api.put(`http://192.168.43.54:5000/api/payments/${editingPayment.payment_id}`, payload);
+            await api.put(`http://192.168.40.190:5000/api/payments/${editingPayment.payment_id}`, payload);
             showNotification('Payment updated', 'success');
         } else {
-            await api.post('http://192.168.43.54:5000/api/payments', payload);
+            await api.post('http://192.168.40.190:5000/api/payments', payload);
             showNotification('Payment recorded', 'success');
         }
         setIsModalOpen(false);
@@ -93,14 +104,26 @@ export const Payments: React.FC = () => {
       setIsModalOpen(true);
   };
 
+  // Case-insensitive check for completed status
   const totalRevenue = payments
-    .filter(p => p.payment_status === PaymentStatus.COMPLETED)
+    .filter(p => p.payment_status?.toLowerCase() === 'completed')
     .reduce((sum, p) => sum + p.amount, 0);
 
-  // Helper for displaying customer names if backend only sends booking_id
   const getCustomerNameForPayment = (bookingId: number) => {
       const booking = bookings.find(b => b.booking_id === bookingId);
-      return booking ? (booking.customer_name || `Booking #${bookingId}`) : `Booking #${bookingId}`;
+      if (!booking) return `Booking #${bookingId}`;
+      
+      // If booking has customer_name (joined query)
+      if (booking.customer_name) return booking.customer_name;
+
+      // Fallback: find in customers list
+      const customer = customers.find(c => c.customer_id === booking.customer_id);
+      return customer ? customer.customer_name : `Customer ${booking.customer_id}`;
+  };
+
+  const formatDate = (dateStr: string) => {
+      if (!dateStr) return '-';
+      return new Date(dateStr).toLocaleDateString();
   };
 
   return (
@@ -128,14 +151,17 @@ export const Payments: React.FC = () => {
              { header: 'Booking ID', accessor: 'booking_id' },
              { header: 'Customer', accessor: (row) => row.customer_name || getCustomerNameForPayment(row.booking_id) },
              { header: 'Amount (PKR)', accessor: (row) => row.amount?.toLocaleString() },
-             { header: 'Date', accessor: 'payment_date' },
-             { header: 'Status', accessor: (row) => (
-                 <span className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wide ${
-                     row.payment_status === PaymentStatus.COMPLETED ? 'bg-[#ECFDF5] text-[#059669]' :
-                     row.payment_status === PaymentStatus.PENDING ? 'bg-[#FFFBEB] text-[#D97706]' :
-                     'bg-[#FFF1F2] text-[#E11D48]'
-                 }`}>{row.payment_status}</span>
-             )}
+             { header: 'Date', accessor: (row) => formatDate(row.payment_date) },
+             { header: 'Status', accessor: (row) => {
+                 const status = row.payment_status?.toLowerCase() || '';
+                 return (
+                    <span className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wide ${
+                        status === 'completed' ? 'bg-[#ECFDF5] text-[#059669]' :
+                        status === 'pending' ? 'bg-[#FFFBEB] text-[#D97706]' :
+                        'bg-[#FFF1F2] text-[#E11D48]'
+                    }`}>{row.payment_status}</span>
+                 );
+             }}
          ]}
          onEdit={openModal}
          searchPlaceholder="Search payments..."
@@ -150,7 +176,11 @@ export const Payments: React.FC = () => {
                     disabled={!!editingPayment}
                 >
                     <option value="">Select Booking</option>
-                    {bookings.map(b => <option key={b.booking_id} value={b.booking_id}>Booking #{b.booking_id} - {b.customer_name || 'Customer'}</option>)}
+                    {bookings.map(b => (
+                        <option key={b.booking_id} value={b.booking_id}>
+                            Booking #{b.booking_id} - {getCustomerNameForPayment(b.booking_id || 0)}
+                        </option>
+                    ))}
                 </FormSelect>
                 <FormInput
                     label="Amount"

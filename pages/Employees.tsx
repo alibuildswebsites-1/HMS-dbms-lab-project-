@@ -23,8 +23,8 @@ export const Employees: React.FC = () => {
     setIsLoading(true);
     try {
         const [empRaw, deptRaw] = await Promise.all([
-            api.get<any[]>('http://192.168.43.54:5000/api/employees'),
-            api.get<any[]>('http://192.168.43.54:5000/api/departments')
+            api.get<any[]>('http://192.168.40.190:5000/api/employees'),
+            api.get<any[]>('http://192.168.40.190:5000/api/departments')
         ]);
         
         const mappedEmployees: Employee[] = empRaw.map(e => ({
@@ -88,10 +88,10 @@ export const Employees: React.FC = () => {
 
     try {
         if (editingEmployee && editingEmployee.employee_id) {
-            await api.put(`http://192.168.43.54:5000/api/employees/${editingEmployee.employee_id}`, payload);
+            await api.put(`http://192.168.40.190:5000/api/employees/${editingEmployee.employee_id}`, payload);
             showNotification('Employee updated successfully', 'success');
         } else {
-            await api.post('http://192.168.43.54:5000/api/employees', payload);
+            await api.post('http://192.168.40.190:5000/api/employees', payload);
             showNotification('Employee added successfully', 'success');
         }
         setIsModalOpen(false);

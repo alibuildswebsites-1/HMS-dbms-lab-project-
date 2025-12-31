@@ -50,7 +50,7 @@ export const SqlConsole: React.FC = () => {
     const startTime = performance.now();
 
     try {
-      const response = await api.post<QueryResponse>('http://192.168.43.54:5000/api/execute-query', { query });
+      const response = await api.post<QueryResponse>('http://192.168.40.190:5000/api/execute-query', { query });
       
       const endTime = performance.now();
       setExecutionTime(Math.round(endTime - startTime));
